@@ -7,17 +7,19 @@
 
 <style>
 :root{
+  /* 会被 JS 每天覆盖成不同主题 */
   --bg:linear-gradient(180deg,#fef5ff 0%,#fdfdff 40%,#f3f9ff 100%);
   --card-glass:rgba(255,255,255,.82);
   --card-strong:rgba(255,255,255,.96);
   --primary:#ff7fae;
   --primary-deep:#ff4c8d;
   --accent:#ffd8ec;
+  --accent-soft:#f7e6ff;
   --text:#333;
   --radius-lg:22px;
   --radius-md:16px;
   --shadow-soft:0 18px 40px rgba(160,180,255,.30);
-  --shadow-strong:0 20px 46px rgba(0,0,0,.18);
+  --shadow-strong:0 22px 50px rgba(0,0,0,.20);
   font-size:16px;
 }
 *{
@@ -45,9 +47,25 @@ body{
   display:flex;
   flex-direction:column;
   gap:10px;
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
   box-shadow:var(--shadow-soft);
+  position:relative;
+  overflow:hidden;
+}
+.top-card::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:inherit;
+  padding:1px;
+  background:linear-gradient(135deg,rgba(255,255,255,.4),rgba(255,255,255,0),rgba(255,255,255,.5));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+          mask-composite:exclude;
+  pointer-events:none;
 }
 .top-row-1{
   display:flex;
@@ -61,8 +79,8 @@ body{
   gap:8px;
 }
 .brand-logo{
-  width:38px;
-  height:38px;
+  width:40px;
+  height:40px;
   border-radius:18px;
   background:conic-gradient(from 210deg,#ffb6da,#ff7fb5,#ffd1e8,#ffb6da);
   display:flex;
@@ -112,7 +130,7 @@ body{
   box-shadow:0 4px 10px rgba(0,0,0,.06);
 }
 .pill-strong{
-  background:linear-gradient(135deg,#ffb7dd,#ff7fb0);
+  background:linear-gradient(135deg,var(--primary),var(--primary-deep));
   color:#fff;
 }
 .pill-strong code{
@@ -130,6 +148,19 @@ body{
   display:flex;
   flex-direction:column;
   gap:10px;
+  position:relative;
+  overflow:hidden;
+}
+.preview-card::before{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.75),rgba(255,255,255,0));
+  top:-80px;
+  right:-40px;
+  pointer-events:none;
 }
 .preview-head{
   display:flex;
@@ -158,10 +189,10 @@ select{
 }
 .preview-chip{
   border-radius:999px;
-  background:#f5f6ff;
+  background:var(--accent-soft);
   padding:4px 8px;
   font-size:.76rem;
-  color:#666;
+  color:#555;
 }
 .preview-label{
   font-size:.86rem;
@@ -186,12 +217,12 @@ select{
   border-radius:999px;
   padding:8px 14px;
   font-size:.86rem;
-  background:linear-gradient(135deg,#ff7fb5,#ff4c8d);
+  background:linear-gradient(135deg,var(--primary),var(--primary-deep));
   color:#fff;
   display:flex;
   align-items:center;
   gap:4px;
-  box-shadow:0 8px 18px rgba(255,76,141,.6);
+  box-shadow:0 8px 18px rgba(0,0,0,.25);
   cursor:pointer;
 }
 .btn-open:active{
@@ -242,7 +273,7 @@ select{
   padding:6px 12px;
   font-size:.8rem;
   cursor:pointer;
-  background:#ffd5eb;
+  background:var(--accent);
   color:#b04474;
 }
 .btn-diary-secondary{
@@ -265,6 +296,22 @@ select{
   border-radius:var(--radius-lg);
   padding:12px 12px 14px;
   box-shadow:var(--shadow-soft);
+  position:relative;
+  overflow:hidden;
+}
+.calendar-card::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:inherit;
+  padding:1px;
+  background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,0),rgba(255,255,255,.7));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+          mask-composite:exclude;
+  pointer-events:none;
 }
 .calendar-header{
   font-size:.8rem;
@@ -311,7 +358,7 @@ select{
 }
 .day.sel{
   background:#fff;
-  box-shadow:0 0 0 2px var(--primary-deep),0 6px 12px rgba(255,76,141,.45);
+  box-shadow:0 0 0 2px var(--primary-deep),0 6px 12px rgba(0,0,0,.25);
   transform:translateY(-1px);
 }
 .day.today::before{
@@ -373,7 +420,7 @@ footer{
 
   <div class="preview-chips">
     <div class="preview-chip">今日：<span id="todayLabel"></span></div>
-    <div class="preview-chip">皮肤：马卡龙渐变</div>
+    <div class="preview-chip">皮肤：<span id="skinLabel">马卡龙渐变</span></div>
   </div>
 
   <div class="preview-label">
@@ -427,9 +474,58 @@ footer{
 <script src="dateMessages.js"></script>
 
 <script>
-/* ===== 配置：把 ANNIVERSARY 改成我们真正的在一起那天 ===== */
-const ANNIVERSARY = "2024-12-27";   // 例如 "2024-06-01"
+/* ===== 配置：纪念日 + 默认香气 ===== */
+const ANNIVERSARY = "2024-12-27";   // 我们在一起的那天
 const DEFAULT_SCENT = "草莓奶霜";
+
+/* 每日主题皮肤表：会按日期“随机”选一套 */
+const THEME_LIST = [
+  {
+    name:"草莓奶霜",
+    skin:"马卡龙渐变",
+    bg:"linear-gradient(180deg,#ffe9f5 0%,#fff5fb 45%,#f3f9ff 100%)",
+    primary:"#ff7fae",
+    primaryDeep:"#ff4c8d",
+    accent:"#ffd8ec",
+    accentSoft:"#fdf0ff"
+  },
+  {
+    name:"柠檬汽水",
+    skin:"气泡微光",
+    bg:"linear-gradient(180deg,#fff9e6 0%,#fffdf1 40%,#f3fbff 100%)",
+    primary:"#ffb547",
+    primaryDeep:"#ff8b1c",
+    accent:"#ffe3a3",
+    accentSoft:"#fff7d9"
+  },
+  {
+    name:"云莓酸奶",
+    skin:"柔雾渐层",
+    bg:"linear-gradient(180deg,#f5e9ff 0%,#fdf7ff 40%,#f0f9ff 100%)",
+    primary:"#b894ff",
+    primaryDeep:"#9064ff",
+    accent:"#e0d1ff",
+    accentSoft:"#f2e9ff"
+  },
+  {
+    name:"蓝砂苏打",
+    skin:"玻璃海岸",
+    bg:"linear-gradient(180deg,#ebf7ff 0%,#f7fbff 40%,#fef8ff 100%)",
+    primary:"#5ca9ff",
+    primaryDeep:"#2f7dde",
+    accent:"#c5e3ff",
+    accentSoft:"#e7f3ff"
+  },
+  {
+    name:"蜜桃乌龙",
+    skin:"暖风日暮",
+    bg:"linear-gradient(180deg,#ffe7df 0%,#fff4ea 40%,#f6f5ff 100%)",
+    primary:"#ff9f7a",
+    primaryDeep:"#ff6f4a",
+    accent:"#ffd5c4",
+    accentSoft:"#ffe9db"
+  }
+];
 
 /* ===== 工具 & 状态 ===== */
 const $ = s => document.querySelector(s);
@@ -440,7 +536,7 @@ const todayKey = fmt(today);
 
 let currentYear = today.getFullYear();
 let currentMonth = today.getMonth(); // 0-index
-let previewKey = todayKey;           // 当前预览的日期 key
+let previewKey = todayKey;           // 当前预览日期 key
 let letterOpened = false;            // 是否已经点开信封
 
 // 日记存储结构：{ [date]: { note, weather, mood } }
@@ -456,13 +552,11 @@ function saveDiaryStore(){
   try{ localStorage.setItem(DIARY_KEY, JSON.stringify(diaryStore)); }catch(e){}
 }
 
-// 把 "YYYY-MM-DD" 解析成本地日期
+/* ==== 小工具 ==== */
 function parseLocalDate(str){
   const [y,m,d] = str.split("-").map(Number);
   return new Date(y, (m||1)-1, d||1);
 }
-
-// 本地日期 -> YYYY-MM-DD
 function fmt(d){
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2,'0');
@@ -480,15 +574,42 @@ function daysSince(dateStr){
   s.setHours(0,0,0,0);
   t.setHours(0,0,0,0);
   const diffMs = t - s;
-  // +1：第一天就是“第 1 天”
   return diffMs>=0 ? Math.floor(diffMs/86400000)+1 : 0;
+}
+function hashString(str){
+  let h = 0;
+  for(let i=0;i<str.length;i++){
+    h = (h*31 + str.charCodeAt(i)) >>> 0;
+  }
+  return h;
+}
+
+/* ===== 主题应用：根据今天日期选一套皮肤 ===== */
+function applyDailyTheme(){
+  const idx = hashString(todayKey) % THEME_LIST.length;
+  const theme = THEME_LIST[idx];
+
+  const root = document.documentElement;
+  root.style.setProperty('--bg', theme.bg);
+  root.style.setProperty('--primary', theme.primary);
+  root.style.setProperty('--primary-deep', theme.primaryDeep);
+  root.style.setProperty('--accent', theme.accent);
+  root.style.setProperty('--accent-soft', theme.accentSoft);
+
+  const scentEl = $('#todayScent');
+  if(scentEl) scentEl.textContent = theme.name || DEFAULT_SCENT;
+  const skinEl = $('#skinLabel');
+  if(skinEl) skinEl.textContent = theme.skin || "马卡龙渐变";
 }
 
 /* ===== 顶部信息 ===== */
 function initTop(){
   $('#daysTogether').textContent = String(daysSince(ANNIVERSARY)).padStart(4,'0');
-  $('#todayScent').textContent = DEFAULT_SCENT;
   $('#todayLabel').textContent = todayKey;
+  const scentEl = $('#todayScent');
+  if(scentEl && !scentEl.textContent){
+    scentEl.textContent = DEFAULT_SCENT;
+  }
 }
 
 /* ===== 年月下拉 ===== */
@@ -539,7 +660,7 @@ function drawCalendar(){
   const y = currentYear;
   const m = currentMonth;
 
-  // 星期行
+  // 星期
   '日一二三四五六'.split('').forEach(w=>{
     const wd = document.createElement('div');
     wd.className = 'wd';
@@ -551,14 +672,12 @@ function drawCalendar(){
   const offset = first.getDay();
   const days = new Date(y,m+1,0).getDate();
 
-  // 前置空位
   for(let i=0;i<offset;i++){
     const blank = document.createElement('div');
     blank.className = 'day disabled';
     cal.appendChild(blank);
   }
 
-  // 日期格
   for(let d=1; d<=days; d++){
     const date = new Date(y,m,d);
     const key = fmt(date);
@@ -567,10 +686,11 @@ function drawCalendar(){
     cell.textContent = d;
 
     const hasMsg = !!msgs[key];
-    const hasDiary = !!diaryStore[key] && !!(diaryStore[key].note || diaryStore[key].weather || diaryStore[key].mood);
+    const ds = diaryStore[key];
+    const hasDiary = !!ds && !!(ds.note || ds.weather || ds.mood || typeof ds === "string");
     let iconChar = "";
     if(hasMsg && hasDiary) iconChar = "🌟";
-    else if(hasMsg) iconChar = msgs[key].icon || "⭐";
+    else if(hasMsg) iconChar = (msgs[key].icon || "⭐");
     else if(hasDiary) iconChar = "✎";
 
     if(iconChar){
@@ -582,7 +702,7 @@ function drawCalendar(){
 
     cell.onclick = () => {
       previewKey = key;
-      letterOpened = false; // 换日期后需要重新点信封
+      letterOpened = false;
       updatePreview();
       drawCalendar();
     };
@@ -595,7 +715,7 @@ function drawCalendar(){
 function loadDiaryFor(dateKey){
   const d = diaryStore[dateKey];
   if(!d) return { note:"", weather:"", mood:"" };
-  if(typeof d === "string"){ // 兼容旧版纯字符串
+  if(typeof d === "string"){ // 兼容旧版只存字符串的情况
     return { note:d, weather:"", mood:"" };
   }
   return {
@@ -623,7 +743,6 @@ function updatePreview(){
     bodyEl.textContent = '这一天还没有系统寄语，只属于你自己，想写点什么留给未来的自己吗？';
   }
 
-  // 同步天气 / 心情 / 日记
   const { note, weather, mood } = loadDiaryFor(previewKey || todayKey);
   $('#diaryInput').value = note;
   $('#weatherSelect').value = weather;
@@ -637,7 +756,7 @@ function updatePreview(){
   }
 }
 
-/* ===== 顶部按钮 & 信封按钮 ===== */
+/* ===== 按钮事件 ===== */
 $('#btnToday').onclick = () => {
   currentYear = today.getFullYear();
   currentMonth = today.getMonth();
@@ -649,19 +768,15 @@ $('#btnToday').onclick = () => {
   updatePreview();
 };
 
-// 打开信封：只切换“已展开”的状态 + 小动效
 $('#btnOpen').onclick = () => {
   letterOpened = true;
   updatePreview();
   const card = document.querySelector('.preview-card');
   card.style.transform = 'translateY(-2px) scale(1.01)';
   card.style.transition = '.18s';
-  setTimeout(()=>{
-    card.style.transform = 'translateY(0) scale(1)';
-  },180);
+  setTimeout(()=>{ card.style.transform = 'translateY(0) scale(1)'; },180);
 };
 
-/* ===== 保存 / 清空 日记+天气+心情 ===== */
 $('#btnSaveDiary').onclick = () => {
   if(!previewKey) return;
   const note = $('#diaryInput').value.trim();
@@ -691,6 +806,7 @@ $('#btnClearDiary').onclick = () => {
 };
 
 /* ===== 初始化 ===== */
+applyDailyTheme();
 initTop();
 initSelects();
 updatePreview();
