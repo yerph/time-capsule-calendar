@@ -198,6 +198,53 @@ select{
   transform:scale(.96) translateY(1px);
 }
 
+/* 日记区域 */
+.diary-label{
+  margin-top:10px;
+  font-size:.84rem;
+  font-weight:600;
+  color:#666;
+}
+.diary-input{
+  width:100%;
+  margin-top:4px;
+  border-radius:12px;
+  border:1px solid #e4e6f2;
+  padding:8px 10px;
+  font-size:.84rem;
+  min-height:70px;
+  resize:vertical;
+  background:#fafbff;
+}
+.diary-actions{
+  margin-top:6px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.btn-diary{
+  border:none;
+  border-radius:999px;
+  padding:6px 12px;
+  font-size:.8rem;
+  cursor:pointer;
+  background:#ffd5eb;
+  color:#b04474;
+}
+.btn-diary-secondary{
+  background:#f1f2fa;
+  color:#666;
+}
+.btn-diary:disabled{
+  opacity:.4;
+  cursor:default;
+}
+.diary-status{
+  font-size:.76rem;
+  color:#888;
+}
+
 /* 日历卡片 */
 .calendar-card{
   margin-top:12px;
@@ -325,6 +372,14 @@ footer{
   <button class="btn-open" id="btnOpen">
     打开信封 💌
   </button>
+
+  <div class="diary-label">✏️ 我的当天小记</div>
+  <textarea id="diaryInput" class="diary-input" placeholder="想给今天留点什么吗？只会保存在你这台设备上。"></textarea>
+  <div class="diary-actions">
+    <button id="btnSaveDiary" class="btn-diary">保存日记</button>
+    <button id="btnClearDiary" class="btn-diary btn-diary-secondary">清空</button>
+    <span id="diaryStatus" class="diary-status"></span>
+  </div>
 </section>
 
 <!-- 日历 -->
@@ -333,19 +388,19 @@ footer{
   <div id="calendar" class="calendar"></div>
 </section>
 
-<footer>语料来自 dateMessages.js · 网页可离线使用</footer>
+<footer>系统寄语来自 dateMessages.js · 你的日记仅保存在本地浏览器</footer>
 
 <!-- 外部寄语文件 -->
 <script src="dateMessages.js"></script>
 
 <script>
-/* ===== 配置（你以后可以让 4o 来帮你改这里） ===== */
+/* ===== 配置 ===== */
 const CONFIG = {
   startDate: "2025-01-01",        // 在一起的起始日期
   defaultScent: "草莓奶霜"        // 今天的默认“香气”
 };
 
-/* ===== 工具函数 ===== */
+/* ===== 工具 & 状态 ===== */
 const $ = s => document.querySelector(s);
 const msgs = window.dateMessages || {};
 
@@ -356,39 +411,49 @@ let currentYear = today.getFullYear();
 let currentMonth = today.getMonth(); // 0-index
 let previewKey = todayKey;           // 当前预览的日期 key
 
-// 本地日期 -> YYYY-MM-DD（不再用 toISOString，避免时区错一天）
+// 日记存储
+const DIARY_KEY = "timeCapsuleDiary";
+let diaryStore = {};
+try{
+  diaryStore = JSON.parse(localStorage.getItem(DIARY_KEY) || "{}");
+}catch(e){
+  diaryStore = {};
+}
+function saveDiaryStore(){
+  try{
+    localStorage.setItem(DIARY_KEY, JSON.stringify(diaryStore));
+  }catch(e){}
+}
+
+// 本地日期 -> YYYY-MM-DD（避免时区问题）
 function fmt(d){
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2,'0');
   const day = String(d.getDate()).padStart(2,'0');
   return `${y}-${m}-${day}`;
 }
-
 function isToday(d){
   return d.getFullYear()===today.getFullYear()
       && d.getMonth()===today.getMonth()
       && d.getDate()===today.getDate();
 }
-
 function daysSince(startStr){
   const s = new Date(startStr);
-  // 只取“日历意义上的日期”，忽略小时
   s.setHours(0,0,0,0);
   const t = new Date();
   t.setHours(0,0,0,0);
   const diffMs = t - s;
-  // +1 表示从第一天算起就是“第 1 天”
   return diffMs>=0 ? Math.floor(diffMs/86400000)+1 : 0;
 }
 
-/* ===== 填写顶部信息 ===== */
+/* ===== 顶部信息 ===== */
 function initTop(){
   $('#daysTogether').textContent = String(daysSince(CONFIG.startDate)).padStart(4,'0');
   $('#todayScent').textContent = CONFIG.defaultScent;
   $('#todayLabel').textContent = todayKey;
 }
 
-/* ===== 填充年份、月份下拉 ===== */
+/* ===== 年月下拉 ===== */
 function initSelects(){
   const ySel = $('#yearSelect');
   const mSel = $('#monthSelect');
@@ -424,7 +489,7 @@ function initSelects(){
   };
 }
 
-/* ===== 渲染日历 ===== */
+/* ===== 日历渲染 ===== */
 function drawCalendar(){
   const cal = $('#calendar');
   cal.innerHTML = '';
@@ -459,9 +524,16 @@ function drawCalendar(){
     cell.className = 'day';
     cell.textContent = d;
 
-    if(msgs[key]){
+    const hasMsg = !!msgs[key];
+    const hasDiary = !!diaryStore[key];
+    let iconChar = "";
+    if(hasMsg && hasDiary) iconChar = "🌟";
+    else if(hasMsg) iconChar = msgs[key].icon || "⭐";
+    else if(hasDiary) iconChar = "✎";
+
+    if(iconChar){
       cell.classList.add('has');
-      cell.dataset.icon = msgs[key].icon || '⭐';
+      cell.dataset.icon = iconChar;
     }
     if(isToday(date)) cell.classList.add('today');
     if(key === previewKey) cell.classList.add('sel');
@@ -469,14 +541,14 @@ function drawCalendar(){
     cell.onclick = () => {
       previewKey = key;
       updatePreview();
-      drawCalendar(); // 重新渲染以更新选中状态
+      drawCalendar();
     };
 
     cal.appendChild(cell);
   }
 }
 
-/* ===== 更新预览区域 ===== */
+/* ===== 预览区域 ===== */
 function updatePreview(){
   $('#previewDate').textContent = previewKey || '——';
   const msg = msgs[previewKey];
@@ -485,6 +557,33 @@ function updatePreview(){
     $('#previewBody').textContent = (msg.body || '') + sign;
   }else{
     $('#previewBody').textContent = '今天还没有寄语，留一点期待吧～';
+  }
+
+  // 日记部分
+  const diaryInput = $('#diaryInput');
+  const diaryStatus = $('#diaryStatus');
+  const btnSave = $('#btnSaveDiary');
+  const btnClear = $('#btnClearDiary');
+
+  if(!previewKey){
+    diaryInput.value = "";
+    diaryInput.disabled = true;
+    btnSave.disabled = true;
+    btnClear.disabled = true;
+    diaryStatus.textContent = "";
+    return;
+  }
+
+  diaryInput.disabled = false;
+  btnSave.disabled = false;
+  btnClear.disabled = false;
+
+  const text = diaryStore[previewKey] || "";
+  diaryInput.value = text;
+  if(text){
+    diaryStatus.textContent = "已为这一天保存了一小段话。";
+  }else{
+    diaryStatus.textContent = "还没有写给这一天的悄悄话。";
   }
 }
 
@@ -499,7 +598,7 @@ $('#btnToday').onclick = () => {
   drawCalendar();
 };
 
-// “打开信封”只是一个小动效，这里让卡片轻微抖一下
+// 打开信封的小动效
 $('#btnOpen').onclick = () => {
   const card = document.querySelector('.preview-card');
   card.style.transform = 'translateY(-2px) scale(1.01)';
@@ -507,6 +606,30 @@ $('#btnOpen').onclick = () => {
   setTimeout(()=>{
     card.style.transform = 'translateY(0) scale(1)';
   },180);
+};
+
+// 保存 / 清空日记
+$('#btnSaveDiary').onclick = () => {
+  if(!previewKey) return;
+  const text = $('#diaryInput').value.trim();
+  if(text){
+    diaryStore[previewKey] = text;
+    $('#diaryStatus').textContent = "已保存。";
+  }else{
+    delete diaryStore[previewKey];
+    $('#diaryStatus').textContent = "内容为空，已清空。";
+  }
+  saveDiaryStore();
+  drawCalendar();
+};
+
+$('#btnClearDiary').onclick = () => {
+  if(!previewKey) return;
+  $('#diaryInput').value = "";
+  delete diaryStore[previewKey];
+  saveDiaryStore();
+  $('#diaryStatus').textContent = "已清空。";
+  drawCalendar();
 };
 
 /* ===== 初始化 ===== */
