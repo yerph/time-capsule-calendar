@@ -18,10 +18,12 @@
   --text:#333;
   --radius-lg:22px;
   --radius-md:16px;
-  --shadow-soft:0 18px 40px rgba(160,180,255,.30);
-  --shadow-strong:0 22px 50px rgba(0,0,0,.20);
+  --shadow-soft:0 20px 45px rgba(160,180,255,.32);
+  --shadow-strong:0 24px 60px rgba(0,0,0,.22);
   font-size:16px;
 }
+
+/* 全局基础 */
 *{
   box-sizing:border-box;
   margin:0;
@@ -37,6 +39,48 @@ body{
   display:flex;
   flex-direction:column;
   gap:12px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* 背景浮动光斑 */
+.bg-orbs{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:-1;
+}
+.orb{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(18px);
+  opacity:.65;
+  mix-blend-mode:screen;
+  animation:floatOrb 18s linear infinite;
+}
+.orb-1{
+  width:220px;height:220px;
+  background:radial-gradient(circle,rgba(255,183,221,.9),rgba(255,183,221,0));
+  top:-60px;left:-40px;
+}
+.orb-2{
+  width:260px;height:260px;
+  background:radial-gradient(circle,rgba(167,201,255,.9),rgba(167,201,255,0));
+  bottom:-80px;right:-30px;
+  animation-duration:22s;
+}
+.orb-3{
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(255,243,176,.9),rgba(255,243,176,0));
+  top:40%;left:-80px;
+  animation-duration:26s;
+}
+
+@keyframes floatOrb{
+  0%{ transform:translate3d(0,0,0); }
+  50%{ transform:translate3d(20px,-10px,0); }
+  100%{ transform:translate3d(0,0,0); }
 }
 
 /* 顶部信息卡片 */
@@ -47,8 +91,8 @@ body{
   display:flex;
   flex-direction:column;
   gap:10px;
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
   box-shadow:var(--shadow-soft);
   position:relative;
   overflow:hidden;
@@ -59,13 +103,22 @@ body{
   inset:-1px;
   border-radius:inherit;
   padding:1px;
-  background:linear-gradient(135deg,rgba(255,255,255,.4),rgba(255,255,255,0),rgba(255,255,255,.5));
+  background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,0),rgba(255,255,255,.8));
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
           mask-composite:exclude;
   pointer-events:none;
+}
+.top-card::after{
+  content:"";
+  position:absolute;
+  width:120px;height:120px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.6),rgba(255,255,255,0));
+  top:-40px;right:-20px;
+  opacity:.7;
 }
 .top-row-1{
   display:flex;
@@ -82,13 +135,21 @@ body{
   width:40px;
   height:40px;
   border-radius:18px;
-  background:conic-gradient(from 210deg,#ffb6da,#ff7fb5,#ffd1e8,#ffb6da);
+  background:conic-gradient(from 210deg,#ffb6da,#ff7fb5,#ffd1e8,#ffc9e1,#ffb6da);
   display:flex;
   align-items:center;
   justify-content:center;
   color:#fff;
   font-size:1.5rem;
-  box-shadow:0 8px 18px rgba(255,127,181,.55);
+  box-shadow:0 10px 20px rgba(255,127,181,.65);
+  position:relative;
+}
+.brand-logo::after{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:inherit;
+  border:1px solid rgba(255,255,255,.6);
 }
 .brand-text-main{
   font-size:1.05rem;
@@ -102,14 +163,17 @@ body{
 .btn-today{
   border:none;
   border-radius:999px;
-  background:#fff;
+  background:rgba(255,255,255,.95);
   padding:6px 12px;
   font-size:.8rem;
-  box-shadow:0 4px 10px rgba(0,0,0,.12);
+  box-shadow:0 4px 10px rgba(0,0,0,.16);
   display:flex;
   align-items:center;
   gap:4px;
   cursor:pointer;
+}
+.btn-today span:last-child{
+  font-size:.95rem;
 }
 .btn-today:active{
   transform:scale(.95);
@@ -154,13 +218,16 @@ body{
 .preview-card::before{
   content:"";
   position:absolute;
-  width:180px;
-  height:180px;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(255,255,255,.75),rgba(255,255,255,0));
-  top:-80px;
-  right:-40px;
+  inset:0;
+  background-image:
+    linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,0)),
+    repeating-linear-gradient(135deg,rgba(255,255,255,.38) 0,rgba(255,255,255,.38) 1px,transparent 1px,transparent 4px);
+  opacity:.28;
   pointer-events:none;
+}
+.preview-card-inner{
+  position:relative;
+  z-index:1;
 }
 .preview-head{
   display:flex;
@@ -193,6 +260,14 @@ select{
   padding:4px 8px;
   font-size:.76rem;
   color:#555;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.preview-chip::before{
+  content:"✧";
+  font-size:.8rem;
+  color:var(--primary-deep);
 }
 .preview-label{
   font-size:.86rem;
@@ -222,11 +297,24 @@ select{
   display:flex;
   align-items:center;
   gap:4px;
-  box-shadow:0 8px 18px rgba(0,0,0,.25);
+  box-shadow:0 10px 22px rgba(0,0,0,.26);
   cursor:pointer;
+  position:relative;
+  overflow:hidden;
+}
+.btn-open::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,rgba(255,255,255,.32),rgba(255,255,255,0),rgba(255,255,255,.35));
+  opacity:0;
+  transition:.3s;
 }
 .btn-open:active{
   transform:scale(.96) translateY(1px);
+}
+.btn-open:active::after{
+  opacity:1;
 }
 
 /* 日记 + 天气 + 心情 */
@@ -252,13 +340,13 @@ select{
 .diary-input{
   width:100%;
   margin-top:6px;
-  border-radius:12px;
+  border-radius:14px;
   border:1px solid #e4e6f2;
   padding:8px 10px;
   font-size:.84rem;
   min-height:70px;
   resize:vertical;
-  background:#fafbff;
+  background:linear-gradient(180deg,#fafbff 0%,#ffffff 100%);
 }
 .diary-actions{
   margin-top:6px;
@@ -305,13 +393,26 @@ select{
   inset:-1px;
   border-radius:inherit;
   padding:1px;
-  background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,0),rgba(255,255,255,.7));
+  background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,0),rgba(255,255,255,.9));
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
           mask-composite:exclude;
   pointer-events:none;
+}
+.calendar-card::after{
+  content:"";
+  position:absolute;
+  width:140px;height:140px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.75),rgba(255,255,255,0));
+  bottom:-60px;left:-10px;
+  opacity:.7;
+}
+.calendar-inner{
+  position:relative;
+  z-index:1;
 }
 .calendar-header{
   font-size:.8rem;
@@ -337,7 +438,7 @@ select{
   color:#999;
 }
 .day{
-  background:#f6f7ff;
+  background:radial-gradient(circle at 30% 20%,#fff 0%,#f6f7ff 55%,#eef0ff 100%);
   color:#444;
   box-shadow:0 2px 4px rgba(0,0,0,.08);
   position:relative;
@@ -357,18 +458,21 @@ select{
   font-size:.7rem;
 }
 .day.sel{
-  background:#fff;
-  box-shadow:0 0 0 2px var(--primary-deep),0 6px 12px rgba(0,0,0,.25);
+  background:radial-gradient(circle at 30% 20%,#fff 0%,#fff 55%,#f8e6ff 100%);
+  box-shadow:0 0 0 2px var(--primary-deep),0 8px 16px rgba(0,0,0,.25);
   transform:translateY(-1px);
 }
 .day.today::before{
   content:"";
-  width:6px;
-  height:6px;
+  width:7px;
+  height:7px;
   border-radius:50%;
   background:var(--primary-deep);
   position:absolute;
   top:5px;
+}
+.day:not(.disabled):active{
+  transform:scale(.94) translateY(1px);
 }
 
 /* 底部 */
@@ -381,6 +485,12 @@ footer{
 </style>
 </head>
 <body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
 
 <!-- 顶部信息 -->
 <section class="top-card">
@@ -411,61 +521,65 @@ footer{
 
 <!-- 中部预览 -->
 <section class="preview-card">
-  <div class="preview-head">
-    <div class="select-wrap">
-      <select id="yearSelect"></select>
-      <select id="monthSelect"></select>
+  <div class="preview-card-inner">
+    <div class="preview-head">
+      <div class="select-wrap">
+        <select id="yearSelect"></select>
+        <select id="monthSelect"></select>
+      </div>
     </div>
-  </div>
 
-  <div class="preview-chips">
-    <div class="preview-chip">今日：<span id="todayLabel"></span></div>
-    <div class="preview-chip">皮肤：<span id="skinLabel">马卡龙渐变</span></div>
-  </div>
+    <div class="preview-chips">
+      <div class="preview-chip">今日：<span id="todayLabel"></span></div>
+      <div class="preview-chip">皮肤：<span id="skinLabel">马卡龙渐变</span></div>
+    </div>
 
-  <div class="preview-label">
-    👀 预览 <span id="previewDate" class="preview-date"></span>
-  </div>
-  <div class="preview-body" id="previewBody">
-    先点下面的某一天，再点「打开信封 💌」，长信才会慢慢展开。
-  </div>
-  <button class="btn-open" id="btnOpen">
-    打开信封 💌
-  </button>
+    <div class="preview-label">
+      👀 预览 <span id="previewDate" class="preview-date"></span>
+    </div>
+    <div class="preview-body" id="previewBody">
+      先点下面的某一天，再点「打开信封 💌」，长信才会慢慢展开。
+    </div>
+    <button class="btn-open" id="btnOpen">
+      打开信封 💌
+    </button>
 
-  <div class="diary-label">✏️ 我的当天小记</div>
-  <div class="diary-row">
-    <select id="weatherSelect">
-      <option value="">今天的天气…</option>
-      <option>☀ 晴</option>
-      <option>⛅ 多云</option>
-      <option>🌧 雨</option>
-      <option>⛈ 雷雨</option>
-      <option>❄ 雪</option>
-      <option>🌫 雾 / 霾</option>
-    </select>
-    <select id="moodSelect">
-      <option value="">今天的心情…</option>
-      <option>😊 超开心</option>
-      <option>🙂 还不错</option>
-      <option>😐 普普通通</option>
-      <option>😴 好累</option>
-      <option>😕 有点丧</option>
-      <option>😡 很烦躁</option>
-    </select>
-  </div>
-  <textarea id="diaryInput" class="diary-input" placeholder="想给今天留点什么吗？天气、心情、碎碎念都可以，只会保存在你这台设备上。"></textarea>
-  <div class="diary-actions">
-    <button id="btnSaveDiary" class="btn-diary">保存今天</button>
-    <button id="btnClearDiary" class="btn-diary btn-diary-secondary">清空记录</button>
-    <span id="diaryStatus" class="diary-status"></span>
+    <div class="diary-label">✏️ 我的当天小记</div>
+    <div class="diary-row">
+      <select id="weatherSelect">
+        <option value="">今天的天气…</option>
+        <option>☀ 晴</option>
+        <option>⛅ 多云</option>
+        <option>🌧 雨</option>
+        <option>⛈ 雷雨</option>
+        <option>❄ 雪</option>
+        <option>🌫 雾 / 霾</option>
+      </select>
+      <select id="moodSelect">
+        <option value="">今天的心情…</option>
+        <option>😊 超开心</option>
+        <option>🙂 还不错</option>
+        <option>😐 普普通通</option>
+        <option>😴 好累</option>
+        <option>😕 有点丧</option>
+        <option>😡 很烦躁</option>
+      </select>
+    </div>
+    <textarea id="diaryInput" class="diary-input" placeholder="想给今天留点什么吗？天气、心情、碎碎念都可以，只会保存在你这台设备上。"></textarea>
+    <div class="diary-actions">
+      <button id="btnSaveDiary" class="btn-diary">保存今天</button>
+      <button id="btnClearDiary" class="btn-diary btn-diary-secondary">清空记录</button>
+      <span id="diaryStatus" class="diary-status"></span>
+    </div>
   </div>
 </section>
 
 <!-- 日历 -->
 <section class="calendar-card">
-  <div class="calendar-header">想看哪一天的信？点下面的日期，再点上面的信封。</div>
-  <div id="calendar" class="calendar"></div>
+  <div class="calendar-inner">
+    <div class="calendar-header">想看哪一天的信？点下面的日期，再点上面的信封。</div>
+    <div id="calendar" class="calendar"></div>
+  </div>
 </section>
 
 <footer>系统寄语来自 dateMessages.js · 天气/心情/日记仅保存在本地浏览器</footer>
