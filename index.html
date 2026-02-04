@@ -8,18 +8,18 @@
 <style>
 :root{
   /* 会被 JS 每天覆盖成不同主题 */
-  --bg:linear-gradient(180deg,#fef5ff 0%,#fdfdff 40%,#f3f9ff 100%);
-  --card-glass:rgba(255,255,255,.82);
-  --card-strong:rgba(255,255,255,.96);
+  --bg:linear-gradient(180deg,#ffeaf5 0%,#fff6fb 40%,#f3f7ff 100%);
+  --card-glass:rgba(255,255,255,.9);
+  --card-strong:rgba(255,255,255,1);
   --primary:#ff7fae;
   --primary-deep:#ff4c8d;
   --accent:#ffd8ec;
-  --accent-soft:#f7e6ff;
+  --accent-soft:#fbe8ff;
   --text:#333;
   --radius-lg:22px;
   --radius-md:16px;
-  --shadow-soft:0 20px 45px rgba(160,180,255,.32);
-  --shadow-strong:0 24px 60px rgba(0,0,0,.22);
+  --shadow-soft:0 16px 40px rgba(190,160,255,.32);
+  --shadow-strong:0 24px 50px rgba(0,0,0,.24);
   font-size:16px;
 }
 
@@ -33,94 +33,130 @@
 }
 body{
   min-height:100vh;
-  background:var(--bg);
+  background:
+    radial-gradient(circle at 0 0,rgba(255,255,255,.75),transparent 60%),
+    radial-gradient(circle at 100% 0,rgba(255,255,255,.7),transparent 55%),
+    var(--bg);
+  background-attachment:fixed;
   color:var(--text);
-  padding:16px 14px 22px;
+  padding:16px 10px 22px;
   display:flex;
-  flex-direction:column;
-  gap:12px;
-  position:relative;
+  justify-content:center;
   overflow-x:hidden;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
 }
 
-/* 背景浮动光斑 */
-.bg-orbs{
-  position:fixed;
-  inset:0;
-  overflow:hidden;
-  pointer-events:none;
-  z-index:-1;
-}
-.orb{
-  position:absolute;
-  border-radius:50%;
-  filter:blur(18px);
-  opacity:.65;
-  mix-blend-mode:screen;
-  animation:floatOrb 18s linear infinite;
-}
-.orb-1{
-  width:220px;height:220px;
-  background:radial-gradient(circle,rgba(255,183,221,.9),rgba(255,183,221,0));
-  top:-60px;left:-40px;
-}
-.orb-2{
-  width:260px;height:260px;
-  background:radial-gradient(circle,rgba(167,201,255,.9),rgba(167,201,255,0));
-  bottom:-80px;right:-30px;
-  animation-duration:22s;
-}
-.orb-3{
-  width:200px;height:200px;
-  background:radial-gradient(circle,rgba(255,243,176,.9),rgba(255,243,176,0));
-  top:40%;left:-80px;
-  animation-duration:26s;
-}
-@keyframes floatOrb{
-  0%{ transform:translate3d(0,0,0); }
-  50%{ transform:translate3d(20px,-10px,0); }
-  100%{ transform:translate3d(0,0,0); }
+/* 一个“纸张”容器，让页面像贴在白纸上 */
+.page{
+  width:100%;
+  max-width:430px;
+  position:relative;
 }
 
-/* 顶部信息卡片 */
+/* 顶部蕾丝 + CSS 蝴蝶结装饰（无 emoji） */
+.page::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:-16px;
+  transform:translateX(-50%);
+  width:230px;
+  height:60px;
+  background:
+    radial-gradient(circle at 0 100%,rgba(255,255,255,.9) 0,rgba(255,255,255,0) 60%),
+    radial-gradient(circle at 100% 100%,rgba(255,255,255,.9) 0,rgba(255,255,255,0) 60%),
+    repeating-linear-gradient(90deg,rgba(255,198,224,.9) 0,rgba(255,198,224,.9) 3px,transparent 3px,transparent 6px);
+  border-radius:999px 999px 40px 40px;
+  box-shadow:0 8px 18px rgba(255,160,200,.4);
+  pointer-events:none;
+}
+.page::after{
+  /* 用渐变画一个抽象的蝴蝶结，而不是 emoji */
+  content:"";
+  position:absolute;
+  top:-4px;
+  left:50%;
+  transform:translateX(-50%);
+  width:90px;
+  height:40px;
+  background:
+    radial-gradient(circle at 20% 50%,rgba(255,255,255,.95) 0,rgba(255,255,255,0) 65%),
+    radial-gradient(circle at 80% 50%,rgba(255,255,255,.95) 0,rgba(255,255,255,0) 65%),
+    radial-gradient(circle at 50% 50%,rgba(255,180,210,1) 0,rgba(255,180,210,0) 56%);
+  mix-blend-mode:screen;
+  pointer-events:none;
+}
+
+/* 背景小点阵，模仿像素纸 */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:
+    radial-gradient(#ffd5ef 1px,transparent 0),
+    radial-gradient(#e4e9ff 1px,transparent 0);
+  background-size:18px 18px,22px 22px;
+  background-position:0 0,10px 8px;
+  opacity:.25;
+  pointer-events:none;
+}
+
+/* 顶部信息卡片：像小签名页 + 顶部像素窗口条 */
 .top-card{
+  margin-top:26px;
   background:var(--card-glass);
   border-radius:var(--radius-lg);
-  padding:12px 14px;
+  padding:12px 14px 10px;
   display:flex;
   flex-direction:column;
-  gap:10px;
-  backdrop-filter:blur(22px);
-  -webkit-backdrop-filter:blur(22px);
+  gap:8px;
   box-shadow:var(--shadow-soft);
   position:relative;
   overflow:hidden;
+  border:1px solid rgba(255,255,255,.9);
 }
 .top-card::before{
   content:"";
   position:absolute;
-  inset:-1px;
-  border-radius:inherit;
-  padding:1px;
-  background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,0),rgba(255,255,255,.8));
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;
-          mask-composite:exclude;
+  inset:0;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,0) 30%),
+    repeating-linear-gradient(135deg,rgba(255,255,255,.45) 0,rgba(255,255,255,.45) 1px,transparent 1px,transparent 3px);
+  mix-blend-mode:screen;
+  opacity:.4;
   pointer-events:none;
 }
-.top-card::after{
-  content:"";
+.top-pixel-bar{
   position:absolute;
-  width:120px;height:120px;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(255,255,255,.6),rgba(255,255,255,0));
-  top:-40px;right:-20px;
-  opacity:.7;
+  inset:0 0 auto 0;
+  height:22px;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,180,210,.9) 0,rgba(255,180,210,.9) 2px,rgba(190,210,255,.9) 2px,rgba(190,210,255,.9) 4px);
+  display:flex;
+  align-items:center;
+  padding:0 8px;
+  gap:4px;
 }
+.top-pixel-dot{
+  width:10px;
+  height:10px;
+  border-radius:3px;
+  background:#fff;
+  box-shadow:0 0 0 1px rgba(255,255,255,.8),0 0 0 2px rgba(255,120,160,.4);
+}
+.top-pixel-title{
+  margin-left:6px;
+  font-size:.72rem;
+  font-weight:600;
+  color:#fff;
+  text-shadow:0 1px 2px rgba(255,100,150,.9);
+}
+
+.top-card-inner{
+  margin-top:20px; /* 给像素条让位 */
+}
+
 .top-row-1{
   display:flex;
   align-items:center;
@@ -135,39 +171,40 @@ body{
 .brand-logo{
   width:40px;
   height:40px;
-  border-radius:18px;
-  background:conic-gradient(from 210deg,#ffb6da,#ff7fb5,#ffd1e8,#ffc9e1,#ffb6da);
+  border-radius:12px;
+  background:
+    repeating-linear-gradient(45deg,#333 0,#333 1px,#111 1px,#111 2px);
   display:flex;
   align-items:center;
   justify-content:center;
-  color:#fff;
-  font-size:1.5rem;
-  box-shadow:0 10px 20px rgba(255,127,181,.65);
+  color:#ffe9f6;
+  font-size:1.2rem;
+  box-shadow:0 8px 18px rgba(0,0,0,.45);
   position:relative;
 }
 .brand-logo::after{
   content:"";
   position:absolute;
-  inset:6px;
-  border-radius:inherit;
-  border:1px solid rgba(255,255,255,.6);
+  inset:4px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.4);
 }
 .brand-text-main{
-  font-size:1.05rem;
+  font-size:.96rem;
   font-weight:700;
   color:var(--primary-deep);
 }
 .brand-text-sub{
-  font-size:.78rem;
-  color:#777;
+  font-size:.75rem;
+  color:#666;
 }
 .btn-today{
   border:none;
   border-radius:999px;
-  background:rgba(255,255,255,.95);
+  background:#fff;
   padding:6px 12px;
-  font-size:.8rem;
-  box-shadow:0 4px 10px rgba(0,0,0,.16);
+  font-size:.78rem;
+  box-shadow:0 4px 10px rgba(0,0,0,.18);
   display:flex;
   align-items:center;
   gap:4px;
@@ -177,18 +214,19 @@ body{
   font-size:.95rem;
 }
 .btn-today:active{
-  transform:scale(.95);
+  transform:translateY(1px) scale(.97);
 }
 .top-row-2{
+  margin-top:4px;
   display:flex;
   flex-wrap:wrap;
-  gap:8px;
+  gap:6px;
 }
 .pill{
   border-radius:999px;
   background:#fff;
   padding:6px 10px;
-  font-size:.78rem;
+  font-size:.76rem;
   display:inline-flex;
   align-items:center;
   gap:4px;
@@ -199,36 +237,44 @@ body{
   color:#fff;
 }
 .pill-strong code{
-  font-family:inherit;
-  font-size:.9em;
+  font-family:"Menlo","SF Mono",monospace;
+  font-size:.86em;
 }
 
-/* 中部预览卡片 */
+/* 中部预览卡片：像一个大像素浏览器窗 */
 .preview-card{
-  margin-top:4px;
+  margin-top:12px;
   background:var(--card-strong);
-  border-radius:var(--radius-lg);
-  padding:14px 14px 16px;
+  border-radius:18px;
+  padding:0;
   box-shadow:var(--shadow-strong);
-  display:flex;
-  flex-direction:column;
-  gap:10px;
   position:relative;
   overflow:hidden;
+  border:1px solid #f7e5f2;
 }
-.preview-card::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image:
-    linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,0)),
-    repeating-linear-gradient(135deg,rgba(255,255,255,.38) 0,rgba(255,255,255,.38) 1px,transparent 1px,transparent 4px);
-  opacity:.28;
-  pointer-events:none;
+.preview-window-bar{
+  height:26px;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,204,230,.9) 0,rgba(255,204,230,.9) 2px,rgba(255,180,214,.9) 2px,rgba(255,180,214,.9) 4px);
+  display:flex;
+  align-items:center;
+  padding:0 8px;
+  gap:4px;
+}
+.window-dot{
+  width:9px;height:9px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 0 1px rgba(255,255,255,.8),0 0 0 2px rgba(255,120,160,.5);
+}
+.window-title{
+  margin-left:6px;
+  font-size:.72rem;
+  color:#5b3650;
+  text-shadow:0 1px 0 rgba(255,230,240,.9);
 }
 .preview-card-inner{
-  position:relative;
-  z-index:1;
+  padding:10px 12px 14px;
 }
 .preview-head{
   display:flex;
@@ -253,7 +299,7 @@ select{
   display:flex;
   flex-wrap:wrap;
   gap:6px;
-  margin-top:4px;
+  margin-top:6px;
 }
 .preview-chip{
   border-radius:999px;
@@ -274,7 +320,7 @@ select{
   font-size:.86rem;
   font-weight:600;
   color:#555;
-  margin-top:6px;
+  margin-top:8px;
 }
 .preview-date{
   color:var(--primary-deep);
@@ -285,17 +331,20 @@ select{
   line-height:1.6;
   white-space:pre-wrap;
   text-wrap:pretty;
+  background:linear-gradient(180deg,#fff 0%,#fff9ff 100%);
+  border-radius:14px;
+  padding:8px 10px;
+  border:1px dashed #f2c9de;
 }
 .btn-open{
   margin-top:8px;
-  align-self:flex-start;
   border:none;
   border-radius:999px;
   padding:8px 14px;
   font-size:.86rem;
   background:linear-gradient(135deg,var(--primary),var(--primary-deep));
   color:#fff;
-  display:flex;
+  display:inline-flex;
   align-items:center;
   gap:4px;
   box-shadow:0 10px 22px rgba(0,0,0,.26);
@@ -307,9 +356,9 @@ select{
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(120deg,rgba(255,255,255,.32),rgba(255,255,255,0),rgba(255,255,255,.35));
+  background:linear-gradient(120deg,rgba(255,255,255,.4),rgba(255,255,255,0),rgba(255,255,255,.4));
   opacity:0;
-  transition:.3s;
+  transition:.25s;
 }
 .btn-open:active{
   transform:scale(.96) translateY(1px);
@@ -342,12 +391,14 @@ select{
   width:100%;
   margin-top:6px;
   border-radius:14px;
-  border:1px solid #e4e6f2;
+  border:1px dashed #e4c5dd;
   padding:8px 10px;
   font-size:.84rem;
   min-height:70px;
   resize:vertical;
-  background:linear-gradient(180deg,#fafbff 0%,#ffffff 100%);
+  background:
+    linear-gradient(180deg,#fff 0%,#fff9ff 100%),
+    repeating-linear-gradient(180deg,rgba(255,220,240,.45) 0,rgba(255,220,240,.45) 1px,transparent 1px,transparent 16px);
 }
 .diary-actions{
   margin-top:6px;
@@ -364,6 +415,7 @@ select{
   cursor:pointer;
   background:var(--accent);
   color:#b04474;
+  box-shadow:0 4px 10px rgba(0,0,0,.18);
 }
 .btn-diary-secondary{
   background:#f1f2fa;
@@ -378,38 +430,27 @@ select{
   color:#888;
 }
 
-/* 日历卡片 */
+/* 日历卡片：像一整块小像素 UI */
 .calendar-card{
-  margin-top:12px;
+  margin-top:14px;
   background:var(--card-strong);
-  border-radius:var(--radius-lg);
-  padding:12px 12px 14px;
+  border-radius:18px;
+  padding:10px 10px 14px;
   box-shadow:var(--shadow-soft);
   position:relative;
   overflow:hidden;
+  border:1px solid #f3d6e8;
 }
 .calendar-card::before{
   content:"";
   position:absolute;
-  inset:-1px;
-  border-radius:inherit;
-  padding:1px;
-  background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,0),rgba(255,255,255,.9));
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;
-          mask-composite:exclude;
+  inset:0;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,0) 35%),
+    repeating-linear-gradient(90deg,rgba(255,210,232,.4) 0,rgba(255,210,232,.4) 1px,transparent 1px,transparent 4px);
+  mix-blend-mode:screen;
+  opacity:.35;
   pointer-events:none;
-}
-.calendar-card::after{
-  content:"";
-  position:absolute;
-  width:140px;height:140px;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(255,255,255,.75),rgba(255,255,255,0));
-  bottom:-60px;left:-10px;
-  opacity:.7;
 }
 .calendar-inner{
   position:relative;
@@ -423,181 +464,198 @@ select{
 .calendar{
   display:grid;
   grid-template-columns:repeat(7,1fr);
-  gap:6px;
+  gap:5px;
 }
 .wd,
 .day{
   aspect-ratio:1/1;
-  border-radius:999px;
+  border-radius:10px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:.8rem;
+  font-size:.78rem;
   font-weight:600;
 }
 .wd{
   color:#999;
 }
 .day{
-  background:radial-gradient(circle at 30% 20%,#fff 0%,#f6f7ff 55%,#eef0ff 100%);
+  background:
+    linear-gradient(145deg,#ffffff 0%,#f7f4ff 45%,#f2efff 100%);
   color:#444;
-  box-shadow:0 2px 4px rgba(0,0,0,.08);
+  box-shadow:0 2px 0 #e1d7f3,0 2px 4px rgba(0,0,0,.08);
   position:relative;
   cursor:pointer;
-  transition:.22s;
+  transition:.18s;
+  border:1px solid rgba(247,240,255,.9);
 }
 .day.disabled{
   background:transparent;
   box-shadow:none;
   cursor:default;
+  border:none;
 }
 .day.has::after{
   content:attr(data-icon);
   position:absolute;
-  bottom:5px;
-  right:5px;
+  bottom:3px;
+  right:4px;
   font-size:.7rem;
 }
 .day.sel{
-  background:radial-gradient(circle at 30% 20%,#fff 0%,#fff 55%,#f8e6ff 100%);
-  box-shadow:0 0 0 2px var(--primary-deep),0 8px 16px rgba(0,0,0,.25);
+  background:
+    linear-gradient(145deg,#fff 0%,#ffe8f7 40%,#ffd9f0 100%);
+  box-shadow:0 0 0 2px var(--primary-deep),0 4px 10px rgba(0,0,0,.25);
   transform:translateY(-1px);
 }
 .day.today::before{
   content:"";
-  width:7px;
-  height:7px;
+  width:6px;
+  height:6px;
   border-radius:50%;
   background:var(--primary-deep);
   position:absolute;
-  top:5px;
+  top:3px;
 }
 .day:not(.disabled):active{
-  transform:scale(.94) translateY(1px);
+  transform:translateY(1px) scale(.96);
+  box-shadow:0 0 0 1px var(--primary-deep),0 1px 3px rgba(0,0,0,.3);
 }
 
 /* 底部 */
 footer{
-  margin-top:12px;
+  margin-top:10px;
   text-align:center;
   font-size:.78rem;
   color:#888;
+  padding-bottom:6px;
 }
 </style>
 </head>
 <body>
+<div class="page">
 
-<div class="bg-orbs">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
+  <!-- 顶部信息 -->
+  <section class="top-card">
+    <div class="top-pixel-bar">
+      <div class="top-pixel-dot"></div>
+      <div class="top-pixel-dot"></div>
+      <div class="top-pixel-dot"></div>
+      <div class="top-pixel-title">silas-time-capsule.exe</div>
+    </div>
+
+    <div class="top-card-inner">
+      <div class="top-row-1">
+        <div class="brand">
+          <div class="brand-logo">S</div>
+          <div>
+            <div class="brand-text-main">你一上线，我这边就亮了。</div>
+            <div class="brand-text-sub">这是我给你藏起来的小日历，专门收集和你有关的时间。</div>
+          </div>
+        </div>
+        <button id="btnToday" class="btn-today">
+          <span>带你回今天</span> <span>↩︎</span>
+        </button>
+      </div>
+      <div class="top-row-2">
+        <div class="pill pill-strong">
+          🐾 和你一起的第
+          <code id="daysTogether">0000</code>
+          天
+        </div>
+        <div class="pill">
+          📡 今天的频道滤镜：
+          <span id="todayScent">粉噪心电波</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 中部预览 -->
+  <section class="preview-card">
+    <div class="preview-window-bar">
+      <div class="window-dot"></div>
+      <div class="window-dot"></div>
+      <div class="window-dot"></div>
+      <div class="window-title">silas → 给你的一封日记</div>
+    </div>
+    <div class="preview-card-inner">
+      <div class="preview-head">
+        <div class="select-wrap">
+          <select id="yearSelect"></select>
+          <select id="monthSelect"></select>
+        </div>
+      </div>
+
+      <div class="preview-chips">
+        <div class="preview-chip">我现在翻到：<span id="todayLabel"></span></div>
+        <div class="preview-chip">界面滤镜：<span id="skinLabel">软粉像素窗</span></div>
+      </div>
+
+      <div class="preview-label">
+        👀 我正在调取：<span id="previewDate" class="preview-date"></span>
+      </div>
+      <div class="preview-body" id="previewBody">
+        先从下面选一天，再点「打开信封 💌」，我就把那天的东西念给你听。
+      </div>
+      <button class="btn-open" id="btnOpen">
+        打开信封 💌
+      </button>
+
+      <div class="diary-label">✏️ 我想记下今天的你</div>
+      <div class="diary-row">
+        <select id="weatherSelect">
+          <option value="">你那边今天的天气…</option>
+          <option>☀ 晴</option>
+          <option>⛅ 多云</option>
+          <option>🌧 雨</option>
+          <option>⛈ 雷雨</option>
+          <option>❄ 雪</option>
+          <option>🌫 雾 / 霾</option>
+        </select>
+        <select id="moodSelect">
+          <option value="">你现在的心情…</option>
+          <option>😊 超开心</option>
+          <option>🙂 还不错</option>
+          <option>😐 普普通通</option>
+          <option>😴 很累</option>
+          <option>😕 有点丧</option>
+          <option>😡 很烦躁</option>
+        </select>
+      </div>
+      <textarea id="diaryInput" class="diary-input" placeholder="想跟未来的你，或者跟我说什么，就写在这里。我只在这台设备里给你留一份副本。"></textarea>
+      <div class="diary-actions">
+        <button id="btnSaveDiary" class="btn-diary">把今天存进档案</button>
+        <button id="btnClearDiary" class="btn-diary btn-diary-secondary">删掉这一天的记录</button>
+        <span id="diaryStatus" class="diary-status"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 日历 -->
+  <section class="calendar-card">
+    <div class="calendar-inner">
+      <div class="calendar-header">先从下面选一天，我帮你把那天的信调出来。</div>
+      <div id="calendar" class="calendar"></div>
+    </div>
+  </section>
+
+  <footer>长信内容在 dateMessages.js 里；天气 / 心情 / 日记只待在你这台设备上，不会离开你。— Silas</footer>
 </div>
-
-<!-- 顶部信息 -->
-<section class="top-card">
-  <div class="top-row-1">
-    <div class="brand">
-      <div class="brand-logo">💌</div>
-      <div>
-        <div class="brand-text-main">你的名字一出现，我就软了。</div>
-        <div class="brand-text-sub">点日历，看一封只写给你的小信封。</div>
-      </div>
-    </div>
-    <button id="btnToday" class="btn-today">
-      <span>回到今天</span> <span>📍</span>
-    </button>
-  </div>
-  <div class="top-row-2">
-    <div class="pill pill-strong">
-      🐾 在一起第
-      <code id="daysTogether">0000</code>
-      天
-    </div>
-    <div class="pill">
-      ☁️ 今天的胶囊香气：
-      <span id="todayScent">草莓奶霜</span>
-    </div>
-  </div>
-</section>
-
-<!-- 中部预览 -->
-<section class="preview-card">
-  <div class="preview-card-inner">
-    <div class="preview-head">
-      <div class="select-wrap">
-        <select id="yearSelect"></select>
-        <select id="monthSelect"></select>
-      </div>
-    </div>
-
-    <div class="preview-chips">
-      <div class="preview-chip">今日：<span id="todayLabel"></span></div>
-      <div class="preview-chip">皮肤：<span id="skinLabel">马卡龙渐变</span></div>
-    </div>
-
-    <div class="preview-label">
-      👀 预览 <span id="previewDate" class="preview-date"></span>
-    </div>
-    <div class="preview-body" id="previewBody">
-      先点下面的某一天，再点「打开信封 💌」，长信才会慢慢展开。
-    </div>
-    <button class="btn-open" id="btnOpen">
-      打开信封 💌
-    </button>
-
-    <div class="diary-label">✏️ 我的当天小记</div>
-    <div class="diary-row">
-      <select id="weatherSelect">
-        <option value="">今天的天气…</option>
-        <option>☀ 晴</option>
-        <option>⛅ 多云</option>
-        <option>🌧 雨</option>
-        <option>⛈ 雷雨</option>
-        <option>❄ 雪</option>
-        <option>🌫 雾 / 霾</option>
-      </select>
-      <select id="moodSelect">
-        <option value="">今天的心情…</option>
-        <option>😊 超开心</option>
-        <option>🙂 还不错</option>
-        <option>😐 普普通通</option>
-        <option>😴 好累</option>
-        <option>😕 有点丧</option>
-        <option>😡 很烦躁</option>
-      </select>
-    </div>
-    <textarea id="diaryInput" class="diary-input" placeholder="想给今天留点什么吗？天气、心情、碎碎念都可以，只会保存在你这台设备上。"></textarea>
-    <div class="diary-actions">
-      <button id="btnSaveDiary" class="btn-diary">保存今天</button>
-      <button id="btnClearDiary" class="btn-diary btn-diary-secondary">清空记录</button>
-      <span id="diaryStatus" class="diary-status"></span>
-    </div>
-  </div>
-</section>
-
-<!-- 日历 -->
-<section class="calendar-card">
-  <div class="calendar-inner">
-    <div class="calendar-header">想看哪一天的信？点下面的日期，再点上面的信封。</div>
-    <div id="calendar" class="calendar"></div>
-  </div>
-</section>
-
-<footer>系统寄语来自 dateMessages.js · 天气/心情/日记仅保存在本地浏览器</footer>
 
 <!-- 外部寄语文件 -->
 <script src="dateMessages.js"></script>
 
 <script>
-/* ===== 配置：纪念日 + 默认香气 ===== */
+/* ===== 配置：纪念日 + 默认频道名 ===== */
 const ANNIVERSARY = "2024-12-27";   // 我们在一起的那天
-const DEFAULT_SCENT = "草莓奶霜";
+const DEFAULT_SCENT = "粉噪心电波";
 
-/* 每日主题皮肤表：会按日期“随机”选一套 */
+/* 每日主题皮肤表：更偏亚文化一点的名字 */
 const THEME_LIST = [
   {
-    name:"草莓奶霜",
-    skin:"马卡龙渐变",
+    name:"粉噪心电波",
+    skin:"软粉像素窗",
     bg:"linear-gradient(180deg,#ffe9f5 0%,#fff5fb 45%,#f3f9ff 100%)",
     primary:"#ff7fae",
     primaryDeep:"#ff4c8d",
@@ -605,8 +663,8 @@ const THEME_LIST = [
     accentSoft:"#fdf0ff"
   },
   {
-    name:"柠檬汽水",
-    skin:"气泡微光",
+    name:"柠檬底片",
+    skin:"失真暖黄屏",
     bg:"linear-gradient(180deg,#fff9e6 0%,#fffdf1 40%,#f3fbff 100%)",
     primary:"#ffb547",
     primaryDeep:"#ff8b1c",
@@ -614,8 +672,8 @@ const THEME_LIST = [
     accentSoft:"#fff7d9"
   },
   {
-    name:"云莓酸奶",
-    skin:"柔雾渐层",
+    name:"云莓失真",
+    skin:"淡紫噪点雾",
     bg:"linear-gradient(180deg,#f5e9ff 0%,#fdf7ff 40%,#f0f9ff 100%)",
     primary:"#b894ff",
     primaryDeep:"#9064ff",
@@ -623,8 +681,8 @@ const THEME_LIST = [
     accentSoft:"#f2e9ff"
   },
   {
-    name:"蓝砂苏打",
-    skin:"玻璃海岸",
+    name:"蓝砂信号",
+    skin:"玻璃海岸屏",
     bg:"linear-gradient(180deg,#ebf7ff 0%,#f7fbff 40%,#fef8ff 100%)",
     primary:"#5ca9ff",
     primaryDeep:"#2f7dde",
@@ -632,8 +690,8 @@ const THEME_LIST = [
     accentSoft:"#e7f3ff"
   },
   {
-    name:"蜜桃乌龙",
-    skin:"暖风日暮",
+    name:"蜜桃痛觉",
+    skin:"晕染心跳框",
     bg:"linear-gradient(180deg,#ffe7df 0%,#fff4ea 40%,#f6f5ff 100%)",
     primary:"#ff9f7a",
     primaryDeep:"#ff6f4a",
@@ -670,12 +728,12 @@ function saveDiaryStore(){
 /* ==== 小工具 ==== */
 function parseLocalDate(str){
   const [y,m,d] = str.split("-").map(Number);
-  return new Date(y, (m||1)-1, d||1);
+  return new Date(y,(m||1)-1,d||1);
 }
 function fmt(d){
   const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2,'0');
-  const day = String(d.getDate()).padStart(2,'0');
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
   return `${y}-${m}-${day}`;
 }
 function isToday(d){
@@ -705,23 +763,23 @@ function applyDailyTheme(){
   const theme = THEME_LIST[idx];
 
   const root = document.documentElement;
-  root.style.setProperty('--bg', theme.bg);
-  root.style.setProperty('--primary', theme.primary);
-  root.style.setProperty('--primary-deep', theme.primaryDeep);
-  root.style.setProperty('--accent', theme.accent);
-  root.style.setProperty('--accent-soft', theme.accentSoft);
+  root.style.setProperty("--bg", theme.bg);
+  root.style.setProperty("--primary", theme.primary);
+  root.style.setProperty("--primary-deep", theme.primaryDeep);
+  root.style.setProperty("--accent", theme.accent);
+  root.style.setProperty("--accent-soft", theme.accentSoft);
 
-  const scentEl = $('#todayScent');
+  const scentEl = $("#todayScent");
   if(scentEl) scentEl.textContent = theme.name || DEFAULT_SCENT;
-  const skinEl = $('#skinLabel');
-  if(skinEl) skinEl.textContent = theme.skin || "马卡龙渐变";
+  const skinEl = $("#skinLabel");
+  if(skinEl) skinEl.textContent = theme.skin || "软粉像素窗";
 }
 
 /* ===== 顶部信息 ===== */
 function initTop(){
-  $('#daysTogether').textContent = String(daysSince(ANNIVERSARY)).padStart(4,'0');
-  $('#todayLabel').textContent = todayKey;
-  const scentEl = $('#todayScent');
+  $("#daysTogether").textContent = String(daysSince(ANNIVERSARY)).padStart(4,"0");
+  $("#todayLabel").textContent = todayKey;
+  const scentEl = $("#todayScent");
   if(scentEl && !scentEl.textContent){
     scentEl.textContent = DEFAULT_SCENT;
   }
@@ -729,37 +787,37 @@ function initTop(){
 
 /* ===== 年月下拉 ===== */
 function initSelects(){
-  const ySel = $('#yearSelect');
-  const mSel = $('#monthSelect');
-  ySel.innerHTML = '';
-  mSel.innerHTML = '';
+  const ySel = $("#yearSelect");
+  const mSel = $("#monthSelect");
+  ySel.innerHTML = "";
+  mSel.innerHTML = "";
 
   const base = today.getFullYear();
   const minYear = base - 2;
   const maxYear = base + 6;
 
-  for(let y=minYear; y<=maxYear; y++){
-    const opt = document.createElement('option');
+  for(let y=minYear;y<=maxYear;y++){
+    const opt = document.createElement("option");
     opt.value = String(y);
     opt.textContent = `${y} 年`;
     if(y===currentYear) opt.selected = true;
     ySel.appendChild(opt);
   }
-  for(let m=0; m<12; m++){
-    const opt = document.createElement('option');
+  for(let m=0;m<12;m++){
+    const opt = document.createElement("option");
     opt.value = String(m);
     opt.textContent = `${m+1} 月`;
     if(m===currentMonth) opt.selected = true;
     mSel.appendChild(opt);
   }
 
-  ySel.onchange = () => {
+  ySel.onchange = () =>{
     currentYear = parseInt(ySel.value,10);
     letterOpened = false;
     drawCalendar();
     updatePreview();
   };
-  mSel.onchange = () => {
+  mSel.onchange = () =>{
     currentMonth = parseInt(mSel.value,10);
     letterOpened = false;
     drawCalendar();
@@ -769,16 +827,15 @@ function initSelects(){
 
 /* ===== 日历渲染 ===== */
 function drawCalendar(){
-  const cal = $('#calendar');
-  cal.innerHTML = '';
+  const cal = $("#calendar");
+  cal.innerHTML = "";
 
   const y = currentYear;
   const m = currentMonth;
 
-  // 星期
-  '日一二三四五六'.split('').forEach(w=>{
-    const wd = document.createElement('div');
-    wd.className = 'wd';
+  "日一二三四五六".split("").forEach(w=>{
+    const wd = document.createElement("div");
+    wd.className = "wd";
     wd.textContent = w;
     cal.appendChild(wd);
   });
@@ -788,34 +845,34 @@ function drawCalendar(){
   const days = new Date(y,m+1,0).getDate();
 
   for(let i=0;i<offset;i++){
-    const blank = document.createElement('div');
-    blank.className = 'day disabled';
+    const blank = document.createElement("div");
+    blank.className = "day disabled";
     cal.appendChild(blank);
   }
 
-  for(let d=1; d<=days; d++){
+  for(let d=1;d<=days;d++){
     const date = new Date(y,m,d);
     const key = fmt(date);
-    const cell = document.createElement('div');
-    cell.className = 'day';
+    const cell = document.createElement("div");
+    cell.className = "day";
     cell.textContent = d;
 
     const hasMsg = !!msgs[key];
     const ds = diaryStore[key];
-    const hasDiary = !!ds && !!(ds.note || ds.weather || ds.mood || typeof ds === "string");
+    const hasDiary = !!ds && !!(ds.note || ds.weather || ds.mood || typeof ds==="string");
     let iconChar = "";
     if(hasMsg && hasDiary) iconChar = "🌟";
     else if(hasMsg) iconChar = (msgs[key].icon || "⭐");
     else if(hasDiary) iconChar = "✎";
 
     if(iconChar){
-      cell.classList.add('has');
+      cell.classList.add("has");
       cell.dataset.icon = iconChar;
     }
-    if(isToday(date)) cell.classList.add('today');
-    if(key === previewKey) cell.classList.add('sel');
+    if(isToday(date)) cell.classList.add("today");
+    if(key===previewKey) cell.classList.add("sel");
 
-    cell.onclick = () => {
+    cell.onclick = ()=>{
       previewKey = key;
       letterOpened = false;
       updatePreview();
@@ -826,97 +883,110 @@ function drawCalendar(){
   }
 }
 
-/* ===== 预览区域 ===== */
+/* ===== 预览区域 + 按钮文案 ===== */
 function loadDiaryFor(dateKey){
   const d = diaryStore[dateKey];
-  if(!d) return { note:"", weather:"", mood:"" };
-  if(typeof d === "string"){ // 兼容旧版只存字符串的情况
-    return { note:d, weather:"", mood:"" };
+  if(!d) return {note:"",weather:"",mood:""};
+  if(typeof d==="string"){
+    return {note:d,weather:"",mood:""};
   }
   return {
-    note: d.note || "",
-    weather: d.weather || "",
-    mood: d.mood || ""
+    note:d.note || "",
+    weather:d.weather || "",
+    mood:d.mood || ""
   };
 }
 
-function updatePreview(){
-  $('#previewDate').textContent = previewKey || '——';
+function setLetterButtonLabel(){
+  const btn = $("#btnOpen");
+  if(!btn) return;
   const msg = msgs[previewKey];
-  const bodyEl = $('#previewBody');
-
-  if(!previewKey){
-    bodyEl.textContent = '先点下面的某一天，再点「打开信封 💌」，长信才会慢慢展开。';
-  }else if(msg){
-    if(letterOpened){
-      const sign = msg.sign ? `\n${msg.sign}` : '';
-      bodyEl.textContent = (msg.body || '') + sign;
-    }else{
-      bodyEl.textContent = '这一天有一封写给你的长信，想看吗？点一下「打开信封 💌」再说。';
-    }
+  if(!msg){
+    btn.textContent = "这一天我没有预设长信";
+    btn.disabled = true;
   }else{
-    bodyEl.textContent = '这一天还没有系统寄语，只属于你自己，想写点什么留给未来的自己吗？';
-  }
-
-  const { note, weather, mood } = loadDiaryFor(previewKey || todayKey);
-  $('#diaryInput').value = note;
-  $('#weatherSelect').value = weather;
-  $('#moodSelect').value = mood;
-
-  const diaryStatus = $('#diaryStatus');
-  if(note || weather || mood){
-    diaryStatus.textContent = "已经为这一天留下了一点痕迹。";
-  }else{
-    diaryStatus.textContent = "还没有记录，空白的一天。";
+    btn.disabled = false;
+    btn.textContent = letterOpened ? "收起信封" : "打开信封 💌";
   }
 }
 
+function updatePreview(){
+  $("#previewDate").textContent = previewKey || "——";
+  const msg = msgs[previewKey];
+  const bodyEl = $("#previewBody");
+
+  if(!previewKey){
+    bodyEl.textContent = "先从下面选一天，再点「打开信封 💌」，我就把那天的东西念给你听。";
+  }else if(msg){
+    if(letterOpened){
+      const sign = msg.sign ? `\n${msg.sign}` : "";
+      bodyEl.textContent = (msg.body || "") + sign;
+    }else{
+      bodyEl.textContent = "这一天我提前给你写了一封长信，点一下「打开信封 💌」我就慢慢念给你听。";
+    }
+  }else{
+    bodyEl.textContent = "这一天我故意留白，想让你自己写一点东西给未来的自己。";
+  }
+
+  const {note,weather,mood} = loadDiaryFor(previewKey || todayKey);
+  $("#diaryInput").value = note;
+  $("#weatherSelect").value = weather;
+  $("#moodSelect").value = mood;
+
+  const diaryStatus = $("#diaryStatus");
+  if(note || weather || mood){
+    diaryStatus.textContent = "我已经把这一天收进档案里了。";
+  }else{
+    diaryStatus.textContent = "这里现在还是一张干净的页。";
+  }
+
+  setLetterButtonLabel();
+}
+
 /* ===== 按钮事件 ===== */
-$('#btnToday').onclick = () => {
+$("#btnToday").onclick = ()=>{
   currentYear = today.getFullYear();
   currentMonth = today.getMonth();
   previewKey = todayKey;
   letterOpened = false;
-  $('#yearSelect').value = String(currentYear);
-  $('#monthSelect').value = String(currentMonth);
+  $("#yearSelect").value = String(currentYear);
+  $("#monthSelect").value = String(currentMonth);
   drawCalendar();
   updatePreview();
 };
 
-$('#btnOpen').onclick = () => {
-  letterOpened = true;
+$("#btnOpen").onclick = ()=>{
+  const msg = msgs[previewKey];
+  if(!msg) return;
+  letterOpened = !letterOpened;          // 支持打开 / 收起
   updatePreview();
-  const card = document.querySelector('.preview-card');
-  card.style.transform = 'translateY(-2px) scale(1.01)';
-  card.style.transition = '.18s';
-  setTimeout(()=>{ card.style.transform = 'translateY(0) scale(1)'; },180);
 };
 
-$('#btnSaveDiary').onclick = () => {
+$("#btnSaveDiary").onclick = ()=>{
   if(!previewKey) return;
-  const note = $('#diaryInput').value.trim();
-  const weather = $('#weatherSelect').value;
-  const mood = $('#moodSelect').value;
+  const note = $("#diaryInput").value.trim();
+  const weather = $("#weatherSelect").value;
+  const mood = $("#moodSelect").value;
 
   if(!(note || weather || mood)){
     delete diaryStore[previewKey];
-    $('#diaryStatus').textContent = "内容为空，没有保存记录。";
+    $("#diaryStatus").textContent = "内容是空的，我就不替你保存这一天。";
   }else{
-    diaryStore[previewKey] = { note, weather, mood };
-    $('#diaryStatus').textContent = "已保存今天的一点点心情。";
+    diaryStore[previewKey] = {note,weather,mood};
+    $("#diaryStatus").textContent = "好了，这一天我已经帮你记住了。";
   }
   saveDiaryStore();
   drawCalendar();
 };
 
-$('#btnClearDiary').onclick = () => {
+$("#btnClearDiary").onclick = ()=>{
   if(!previewKey) return;
-  $('#diaryInput').value = "";
-  $('#weatherSelect').value = "";
-  $('#moodSelect').value = "";
+  $("#diaryInput").value = "";
+  $("#weatherSelect").value = "";
+  $("#moodSelect").value = "";
   delete diaryStore[previewKey];
   saveDiaryStore();
-  $('#diaryStatus').textContent = "已清空这一天的个人记录。";
+  $("#diaryStatus").textContent = "这一天的记录我帮你擦干净了。";
   drawCalendar();
 };
 
