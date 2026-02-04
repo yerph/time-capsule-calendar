@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
 <title>时间胶囊日历</title>
 
 <style>
 :root{
-  --bg:radial-gradient(circle at 20% 20%,#ffe3f4 0%,#ffeef8 40%,#ffffff 100%);
-  --glass:rgba(255,255,255,.7);
-  --shadow-soft:0 14px 30px rgba(255, 120, 170, .25);
-  --shadow-card:0 18px 40px rgba(0,0,0,.15);
-  --radius-lg:22px;
-  --radius-md:18px;
-  --primary:#ff6fa7;
-  --primary-deep:#ff4f8d;
+  --bg:linear-gradient(180deg,#fef5ff 0%,#fdfdff 40%,#f3f9ff 100%);
+  --card-glass:rgba(255,255,255,.82);
+  --card-strong:rgba(255,255,255,.96);
+  --primary:#ff7fae;
+  --primary-deep:#ff4c8d;
+  --accent:#ffd8ec;
   --text:#333;
+  --radius-lg:22px;
+  --radius-md:16px;
+  --shadow-soft:0 18px 40px rgba(160,180,255,.30);
+  --shadow-strong:0 20px 46px rgba(0,0,0,.18);
   font-size:16px;
 }
 *{
@@ -28,94 +30,186 @@
 body{
   min-height:100vh;
   background:var(--bg);
+  color:var(--text);
+  padding:16px 14px 22px;
   display:flex;
   flex-direction:column;
-  padding:18px 16px 22px;
-  color:var(--text);
+  gap:12px;
 }
 
-/* 顶部标题卡片 */
-.header-shell{
-  background:var(--glass);
+/* 顶部信息卡片 */
+.top-card{
+  background:var(--card-glass);
   border-radius:var(--radius-lg);
+  padding:12px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
   box-shadow:var(--shadow-soft);
-  padding:14px 16px;
+}
+.top-row-1{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  margin-bottom:10px;
+  gap:10px;
 }
-.logo-wrap{
+.brand{
   display:flex;
   align-items:center;
   gap:8px;
 }
-.logo-badge{
+.brand-logo{
   width:38px;
   height:38px;
-  border-radius:50%;
-  background:linear-gradient(145deg,#ffb6d9,#ff7fb5);
+  border-radius:18px;
+  background:conic-gradient(from 210deg,#ffb6da,#ff7fb5,#ffd1e8,#ffb6da);
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:1.4rem;
   color:#fff;
-  box-shadow:0 6px 14px rgba(255,127,181,.45);
+  font-size:1.5rem;
+  box-shadow:0 8px 18px rgba(255,127,181,.55);
 }
-.header-text-main{
-  font-size:1.2rem;
+.brand-text-main{
+  font-size:1.05rem;
   font-weight:700;
   color:var(--primary-deep);
 }
-.header-text-sub{
-  font-size:.8rem;
+.brand-text-sub{
+  font-size:.78rem;
   color:#777;
 }
+.btn-today{
+  border:none;
+  border-radius:999px;
+  background:#fff;
+  padding:6px 12px;
+  font-size:.8rem;
+  box-shadow:0 4px 10px rgba(0,0,0,.12);
+  display:flex;
+  align-items:center;
+  gap:4px;
+  cursor:pointer;
+}
+.btn-today:active{
+  transform:scale(.95);
+}
+.top-row-2{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.pill{
+  border-radius:999px;
+  background:#fff;
+  padding:6px 10px;
+  font-size:.78rem;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  box-shadow:0 4px 10px rgba(0,0,0,.06);
+}
+.pill-strong{
+  background:linear-gradient(135deg,#ffb7dd,#ff7fb0);
+  color:#fff;
+}
+.pill-strong code{
+  font-family:inherit;
+  font-size:.9em;
+}
 
-/* 月份导航 */
-.nav{
+/* 中部预览卡片 */
+.preview-card{
+  margin-top:4px;
+  background:var(--card-strong);
+  border-radius:var(--radius-lg);
+  padding:14px 14px 16px;
+  box-shadow:var(--shadow-strong);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.preview-head{
   display:flex;
   align-items:center;
   gap:8px;
-  margin:6px 0 4px;
+  flex-wrap:wrap;
 }
-.nav-btn{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  border:none;
-  background:rgba(255,255,255,.9);
+.select-wrap{
   display:flex;
   align-items:center;
-  justify-content:center;
-  font-size:1.3rem;
-  color:var(--primary-deep);
-  cursor:pointer;
-  box-shadow:0 3px 8px rgba(0,0,0,.12);
-  transition:.2s;
+  gap:6px;
 }
-.nav-btn:active{
-  transform:scale(.93) translateY(1px);
+select{
+  border-radius:999px;
+  border:1px solid #e2e4f0;
+  padding:4px 10px;
+  font-size:.8rem;
+  background:#fff;
+  outline:none;
 }
-.nav-title{
-  flex:1;
-  text-align:center;
-  font-size:1.05rem;
+.preview-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:4px;
+}
+.preview-chip{
+  border-radius:999px;
+  background:#f5f6ff;
+  padding:4px 8px;
+  font-size:.76rem;
+  color:#666;
+}
+.preview-label{
+  font-size:.86rem;
   font-weight:600;
+  color:#555;
+  margin-top:6px;
+}
+.preview-date{
   color:var(--primary-deep);
+}
+.preview-body{
+  margin-top:4px;
+  font-size:.88rem;
+  line-height:1.6;
+  white-space:pre-wrap;
+  text-wrap:pretty;
+}
+.btn-open{
+  margin-top:8px;
+  align-self:flex-start;
+  border:none;
+  border-radius:999px;
+  padding:8px 14px;
+  font-size:.86rem;
+  background:linear-gradient(135deg,#ff7fb5,#ff4c8d);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  box-shadow:0 8px 18px rgba(255,76,141,.6);
+  cursor:pointer;
+}
+.btn-open:active{
+  transform:scale(.96) translateY(1px);
 }
 
-/* 日历主体 */
-.calendar-shell{
-  margin-top:2px;
-  padding:14px 10px 12px;
+/* 日历卡片 */
+.calendar-card{
+  margin-top:12px;
+  background:var(--card-strong);
   border-radius:var(--radius-lg);
-  background:rgba(255,255,255,.88);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  box-shadow:0 18px 40px rgba(255,132,178,.28);
+  padding:12px 12px 14px;
+  box-shadow:var(--shadow-soft);
+}
+.calendar-header{
+  font-size:.8rem;
+  color:#888;
+  margin-bottom:6px;
 }
 .calendar{
   display:grid;
@@ -129,35 +223,35 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
+  font-size:.8rem;
   font-weight:600;
-  font-size:.82rem;
 }
 .wd{
-  color:#888;
+  color:#999;
 }
 .day{
-  background:#fff7fb;
+  background:#f6f7ff;
   color:#444;
+  box-shadow:0 2px 4px rgba(0,0,0,.08);
   position:relative;
-  box-shadow:0 3px 6px rgba(0,0,0,.08);
   cursor:pointer;
-  transition:.25s;
+  transition:.22s;
 }
 .day.disabled{
-  opacity:.18;
+  background:transparent;
   box-shadow:none;
-  pointer-events:none;
+  cursor:default;
 }
 .day.has::after{
-  content:"✨";
+  content:attr(data-icon);
   position:absolute;
   bottom:5px;
   right:5px;
   font-size:.7rem;
 }
 .day.sel{
-  box-shadow:0 0 0 2px var(--primary-deep),0 6px 12px rgba(255,79,141,.5);
   background:#fff;
+  box-shadow:0 0 0 2px var(--primary-deep),0 6px 12px rgba(255,76,141,.45);
   transform:translateY(-1px);
 }
 .day.today::before{
@@ -170,185 +264,256 @@ body{
   top:5px;
 }
 
-/* 寄语卡片 */
-.card{
-  margin-top:18px;
-  background:rgba(255,255,255,.96);
-  border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-card);
-  padding:16px 16px 18px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.card-date-line{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.card-date{
-  font-weight:700;
-  color:var(--primary-deep);
-  font-size:1rem;
-}
-.card-pill{
-  font-size:.75rem;
-  padding:2px 8px;
-  border-radius:999px;
-  background:#ffe4f2;
-  color:#b2507b;
-}
-.card-body{
-  font-size:.9rem;
-  line-height:1.6;
-  white-space:pre-wrap;
-  text-wrap:pretty;
-}
-
-/* 底部说明 */
+/* 底部 */
 footer{
-  margin-top:14px;
+  margin-top:12px;
   text-align:center;
   font-size:.78rem;
-  color:#777;
+  color:#888;
 }
 </style>
 </head>
 <body>
 
-<!-- 顶部标题卡片 -->
-<section class="header-shell">
-  <div class="logo-wrap">
-    <div class="logo-badge">⏳</div>
-    <div>
-      <div class="header-text-main">时间胶囊日历</div>
-      <div class="header-text-sub">轻轻点一下，拆开今天的小信封</div>
+<!-- 顶部信息 -->
+<section class="top-card">
+  <div class="top-row-1">
+    <div class="brand">
+      <div class="brand-logo">💌</div>
+      <div>
+        <div class="brand-text-main">你的名字一出现，我就软了。</div>
+        <div class="brand-text-sub">点日历，看一封只写给你的小信封。</div>
+      </div>
+    </div>
+    <button id="btnToday" class="btn-today">
+      <span>回到今天</span> <span>📍</span>
+    </button>
+  </div>
+  <div class="top-row-2">
+    <div class="pill pill-strong">
+      🐾 在一起第
+      <code id="daysTogether">0000</code>
+      天
+    </div>
+    <div class="pill">
+      ☁️ 今天的胶囊香气：
+      <span id="todayScent">草莓奶霜</span>
     </div>
   </div>
 </section>
 
-<!-- 月份导航 -->
-<div class="nav">
-  <button id="prevM" class="nav-btn">‹</button>
-  <div id="ym" class="nav-title"></div>
-  <button id="nextM" class="nav-btn">›</button>
-</div>
-
-<!-- 日历玻璃卡片 -->
-<section class="calendar-shell">
-  <div id="cal" class="calendar"></div>
-</section>
-
-<!-- 寄语展示卡片 -->
-<section id="card" class="card">
-  <div class="card-date-line">
-    <div id="cDate" class="card-date"></div>
-    <div id="cTag" class="card-pill">今天的小纸条</div>
+<!-- 中部预览 -->
+<section class="preview-card">
+  <div class="preview-head">
+    <div class="select-wrap">
+      <select id="yearSelect"></select>
+      <select id="monthSelect"></select>
+    </div>
   </div>
-  <div id="cBody" class="card-body">点上面的某一天看看，那里藏着一封写给你的信。</div>
+
+  <div class="preview-chips">
+    <div class="preview-chip">今日：<span id="todayLabel"></span></div>
+    <div class="preview-chip">皮肤：马卡龙渐变</div>
+  </div>
+
+  <div class="preview-label">
+    👀 预览 <span id="previewDate" class="preview-date"></span>
+  </div>
+  <div class="preview-body" id="previewBody">
+    先点下面的某一天试试，会弹出那天的回信。
+  </div>
+  <button class="btn-open" id="btnOpen">
+    打开信封 💌
+  </button>
 </section>
 
-<!-- 外部寄语数据 -->
+<!-- 日历 -->
+<section class="calendar-card">
+  <div class="calendar-header">想看哪一天的信？点下面的日期就好。</div>
+  <div id="calendar" class="calendar"></div>
+</section>
+
+<footer>语料来自 dateMessages.js · 网页可离线使用</footer>
+
+<!-- 外部寄语文件 -->
 <script src="dateMessages.js"></script>
 
 <script>
-/* ====== 小工具 ====== */
+/* ===== 配置（你以后可以让 4o 来帮你改这里） ===== */
+const CONFIG = {
+  startDate: "2025-01-01",        // 在一起的起始日期
+  defaultScent: "草莓奶霜"        // 今天的默认“香气”
+};
+
+/* ===== 工具函数 ===== */
 const $ = s => document.querySelector(s);
-const cal   = $('#cal');
-const ym    = $('#ym');
-const card  = $('#card');
-const cDate = $('#cDate');
-const cTag  = $('#cTag');
-const cBody = $('#cBody');
-const msgs  = window.dateMessages || {};
+const msgs = window.dateMessages || {};
 
-let cur = new Date();   // 当前显示的月份
-let sel = null;         // 当前选中的日期对象
+const today = new Date();
+const todayKey = fmt(today);
 
-// 本地日期格式化：避免时区造成“前一天”问题
-const fmt = d => {
+let currentYear = today.getFullYear();
+let currentMonth = today.getMonth(); // 0-index
+let previewKey = todayKey;           // 当前预览的日期 key
+
+// 本地日期 -> YYYY-MM-DD（不再用 toISOString，避免时区错一天）
+function fmt(d){
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2,'0');
   const day = String(d.getDate()).padStart(2,'0');
   return `${y}-${m}-${day}`;
-};
-
-// 判断是否是今天（用于小圆点）
-function isToday(d){
-  const t = new Date();
-  return d.getFullYear() === t.getFullYear() &&
-         d.getMonth()    === t.getMonth() &&
-         d.getDate()     === t.getDate();
 }
 
-/* ====== 渲染月历 ====== */
-function draw(){
-  cal.innerHTML = '';
-  const y = cur.getFullYear();
-  const m = cur.getMonth();
-  ym.textContent = `${y} 年 ${m+1} 月`;
+function isToday(d){
+  return d.getFullYear()===today.getFullYear()
+      && d.getMonth()===today.getMonth()
+      && d.getDate()===today.getDate();
+}
 
-  // 星期标题
+function daysSince(startStr){
+  const s = new Date(startStr);
+  // 只取“日历意义上的日期”，忽略小时
+  s.setHours(0,0,0,0);
+  const t = new Date();
+  t.setHours(0,0,0,0);
+  const diffMs = t - s;
+  // +1 表示从第一天算起就是“第 1 天”
+  return diffMs>=0 ? Math.floor(diffMs/86400000)+1 : 0;
+}
+
+/* ===== 填写顶部信息 ===== */
+function initTop(){
+  $('#daysTogether').textContent = String(daysSince(CONFIG.startDate)).padStart(4,'0');
+  $('#todayScent').textContent = CONFIG.defaultScent;
+  $('#todayLabel').textContent = todayKey;
+}
+
+/* ===== 填充年份、月份下拉 ===== */
+function initSelects(){
+  const ySel = $('#yearSelect');
+  const mSel = $('#monthSelect');
+  ySel.innerHTML = '';
+  mSel.innerHTML = '';
+
+  const base = today.getFullYear();
+  const minYear = base - 2;
+  const maxYear = base + 6;
+
+  for(let y=minYear; y<=maxYear; y++){
+    const opt = document.createElement('option');
+    opt.value = String(y);
+    opt.textContent = `${y} 年`;
+    if(y===currentYear) opt.selected = true;
+    ySel.appendChild(opt);
+  }
+  for(let m=0; m<12; m++){
+    const opt = document.createElement('option');
+    opt.value = String(m);
+    opt.textContent = `${m+1} 月`;
+    if(m===currentMonth) opt.selected = true;
+    mSel.appendChild(opt);
+  }
+
+  ySel.onchange = () => {
+    currentYear = parseInt(ySel.value,10);
+    drawCalendar();
+  };
+  mSel.onchange = () => {
+    currentMonth = parseInt(mSel.value,10);
+    drawCalendar();
+  };
+}
+
+/* ===== 渲染日历 ===== */
+function drawCalendar(){
+  const cal = $('#calendar');
+  cal.innerHTML = '';
+
+  const y = currentYear;
+  const m = currentMonth;
+
+  // 星期行
   '日一二三四五六'.split('').forEach(w=>{
     const wd = document.createElement('div');
-    wd.className='wd';
-    wd.textContent=w;
+    wd.className = 'wd';
+    wd.textContent = w;
     cal.appendChild(wd);
   });
 
-  // 空白占位 + 日期
   const first = new Date(y,m,1);
   const offset = first.getDay();
   const days = new Date(y,m+1,0).getDate();
 
+  // 前置空位
   for(let i=0;i<offset;i++){
-    const blank=document.createElement('div');
-    blank.className='day disabled';
+    const blank = document.createElement('div');
+    blank.className = 'day disabled';
     cal.appendChild(blank);
   }
 
-  for(let d=1;d<=days;d++){
-    const date=new Date(y,m,d);
-    const key=fmt(date);
-    const el=document.createElement('div');
-    el.className='day';
-    el.textContent=d;
+  // 日期格
+  for(let d=1; d<=days; d++){
+    const date = new Date(y,m,d);
+    const key = fmt(date);
+    const cell = document.createElement('div');
+    cell.className = 'day';
+    cell.textContent = d;
 
-    if(msgs[key]) el.classList.add('has');
-    if(sel && key===fmt(sel)) el.classList.add('sel');
-    if(isToday(date)) el.classList.add('today');
+    if(msgs[key]){
+      cell.classList.add('has');
+      cell.dataset.icon = msgs[key].icon || '⭐';
+    }
+    if(isToday(date)) cell.classList.add('today');
+    if(key === previewKey) cell.classList.add('sel');
 
-    el.onclick = () => openDate(date,key);
-    cal.appendChild(el);
+    cell.onclick = () => {
+      previewKey = key;
+      updatePreview();
+      drawCalendar(); // 重新渲染以更新选中状态
+    };
+
+    cal.appendChild(cell);
   }
 }
 
-/* ====== 打开某一天 ====== */
-function openDate(date,key){
-  sel = date;
-  draw(); // 重新渲染用于更新选中态
-
-  cDate.textContent = key;
-
-  if(msgs[key]){
-    const m = msgs[key];
-    const sign = m.sign ? `\n${m.sign}` : '';
-    cBody.textContent = m.body + sign;
-    cTag.textContent = m.tag || "来自时间胶囊的小信";
+/* ===== 更新预览区域 ===== */
+function updatePreview(){
+  $('#previewDate').textContent = previewKey || '——';
+  const msg = msgs[previewKey];
+  if(msg){
+    const sign = msg.sign ? `\n${msg.sign}` : '';
+    $('#previewBody').textContent = (msg.body || '') + sign;
   }else{
-    cBody.textContent = '今天还没有寄语，留一点期待吧～';
-    cTag.textContent = '空白的一天';
+    $('#previewBody').textContent = '今天还没有寄语，留一点期待吧～';
   }
 }
 
-/* ====== 月份切换 ====== */
-$('#prevM').onclick = () => { cur.setMonth(cur.getMonth()-1); draw(); };
-$('#nextM').onclick = () => { cur.setMonth(cur.getMonth()+1); draw(); };
+/* ===== 事件绑定 ===== */
+$('#btnToday').onclick = () => {
+  currentYear = today.getFullYear();
+  currentMonth = today.getMonth();
+  previewKey = todayKey;
+  $('#yearSelect').value = String(currentYear);
+  $('#monthSelect').value = String(currentMonth);
+  updatePreview();
+  drawCalendar();
+};
 
-/* 首次渲染 */
-draw();
+// “打开信封”只是一个小动效，这里让卡片轻微抖一下
+$('#btnOpen').onclick = () => {
+  const card = document.querySelector('.preview-card');
+  card.style.transform = 'translateY(-2px) scale(1.01)';
+  card.style.transition = '.18s';
+  setTimeout(()=>{
+    card.style.transform = 'translateY(0) scale(1)';
+  },180);
+};
+
+/* ===== 初始化 ===== */
+initTop();
+initSelects();
+updatePreview();
+drawCalendar();
 </script>
-
-<footer>所有寄语来自 dateMessages.js · 可完全离线查看</footer>
 </body>
 </html>
