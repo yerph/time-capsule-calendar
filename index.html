@@ -1,249 +1,112 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <title>时间胶囊日历</title>
+
+<!-- -------- 样式：渐变 + 玻璃 + 动效 -------- -->
 <style>
-/* ---------- 主题色 & 全局 ---------- */
 :root{
-  --bg-grad: radial-gradient(circle at 30% 30%, #ffeaf1 0%, #fff7f8 50%, #fdfcfb 100%);
-  --primary:#ff6f91;
-  --primary-dark:#f64c72;
-  --accent:#ffb3c6;
-  --text:#333;
+  --bg:radial-gradient(circle at 25% 30%,#ffd8e5 0%,#ffeef3 40%,#ffffff 100%);
   --glass:rgba(255,255,255,.55);
-  --shadow:0 24px 32px rgba(0,0,0,.12);
-  --radius:16px;
+  --shadow:0 24px 36px rgba(0,0,0,.12);
+  --radius:18px;
+  --primary:#ff6f91;
+  --accent:#ffb3c6;
   font-size:16px;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;}
-body{min-height:100vh;background:var(--bg-grad);display:flex;flex-direction:column;color:var(--text);padding:20px 12px;animation:bgMove 20s infinite alternate ease-in-out;}
-@keyframes bgMove{from{background-position:0 0;}to{background-position:100% 100%;}}
-h1{text-align:center;font-size:1.5rem;margin-bottom:10px;letter-spacing:.5px;font-weight:700;color:var(--primary-dark);text-shadow:0 2px 4px rgba(255,255,255,.6);}
-button{border:none;cursor:pointer;border-radius:var(--radius);transition:.25s;user-select:none;}
-button:active{transform:scale(.95);}
-
-/* ---------- 导航 ---------- */
-.nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
-.navBtn{background:none;color:var(--primary-dark);font-size:1.45rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;}
-.navBtn:hover{color:var(--accent);}
-
-/* ---------- 日历 ---------- */
-.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:18px;}
-.weekday,.day{aspect-ratio:1/1;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-weight:600;position:relative;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
-.weekday{background:var(--glass);color:#666;text-shadow:0 1px 1px rgba(255,255,255,.8);}
-.day{background:var(--glass);box-shadow:0 4px 6px rgba(0,0,0,.06);font-weight:500;color:#444;overflow:hidden;}
-.day::before{content:"";position:absolute;inset:0;border-radius:inherit;transition:.3s;}
-.day:hover::before{background:rgba(255,255,255,.18);}
-.day.hasNote::after{content:"✨";position:absolute;bottom:6px;right:6px;font-size:.8rem;}
-.day.disabled{opacity:.3;pointer-events:none;}
-.day.selected{outline:3px solid var(--primary);}
-
-/* ---------- 卡片 ---------- */
-.card{background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 16px;display:flex;flex-direction:column;gap:14px;animation:fadeIn .4s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-.card.hidden{display:none;}
-#noteDate{font-weight:700;font-size:1.1rem;color:var(--primary-dark);}
-#noteDisplay{white-space:pre-wrap;line-height:1.4;}
-textarea{width:100%;min-height:120px;border:2px solid var(--accent);border-radius:var(--radius);padding:10px;background:rgba(255,255,255,.8);outline:none;font-size:1rem;line-height:1.4;}
-
-/* ---------- 按钮组 ---------- */
-.btnRow{display:flex;flex-wrap:wrap;gap:10px;}
-.action{flex:1;background:var(--primary);color:#fff;padding:12px;font-size:.95rem;box-shadow:0 3px 5px rgba(0,0,0,.18);}
-.secondary{background:#ececec;color:#666;}
-.action:hover{filter:brightness(1.05);}
-.secondary:hover{background:#e0e0e0;}
-input[type=file]{display:none;}
-
-/* ---------- 页脚 ---------- */
-footer{margin-top:16px;text-align:center;font-size:.78rem;color:#777;text-shadow:0 1px 1px rgba(255,255,255,.6);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;}
+body{min-height:100vh;background:var(--bg);display:flex;flex-direction:column;gap:18px;padding:24px;animation:bgMove 30s infinite alternate ease-out;}
+@keyframes bgMove{from{background-position:0 0;}to{background-position:120% 80%;}}
+h1{font-size:1.6rem;font-weight:700;text-align:center;letter-spacing:.6px;color:var(--primary);text-shadow:0 3px 6px rgba(255,255,255,.6);}
+.header{display:flex;justify-content:space-between;align-items:center;margin-top:4px;}
+.btn-nav{width:44px;height:44px;border:none;background:none;color:var(--primary);font-size:1.6rem;cursor:pointer;transition:.25s;border-radius:50%;}
+.btn-nav:hover{background:rgba(255,255,255,.3);backdrop-filter:blur(6px);}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:6px;user-select:none;}
+.weekday,.day{aspect-ratio:1/1;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-weight:600;position:relative;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.weekday{background:var(--glass);color:#555;}
+.day{background:var(--glass);color:#444;font-weight:500;box-shadow:0 4px 8px rgba(0,0,0,.06);cursor:pointer;transition:.3s;}
+.day:hover{transform:translateY(-2px);box-shadow:0 6px 12px rgba(0,0,0,.08);}
+.day.has::after{content:"✨";position:absolute;bottom:6px;right:6px;font-size:.8rem;}
+.day.sel{outline:3px solid var(--primary);}
+.card{background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;display:none;flex-direction:column;gap:12px;animation:fade .5s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.card.show{display:flex;}
+.card strong{font-size:1.1rem;color:var(--primary);}
+.card .body{text-wrap:pretty;white-space:pre-wrap;line-height:1.5;}
+footer{margin-top:auto;text-align:center;font-size:.8rem;color:#666;text-shadow:0 1px 2px rgba(255,255,255,.7);}
 </style>
 </head>
 <body>
-<h1>时间胶囊 · <span id="monthYear"></span></h1>
 
-<div class="nav">
-  <button class="navBtn" id="prevYear">«</button>
-  <button class="navBtn" id="prevMonth">‹</button>
-  <div style="flex:1;"></div>
-  <button class="navBtn" id="nextMonth">›</button>
-  <button class="navBtn" id="nextYear">»</button>
+<h1>时间胶囊 · <span id="ym"></span></h1>
+
+<!-- 月份导航 -->
+<div class="header">
+  <button class="btn-nav" id="prevM">‹</button>
+  <button class="btn-nav" id="nextM">›</button>
 </div>
 
-<div class="calendar" id="calendar"></div>
+<!-- 日历栅格 -->
+<div id="cal" class="calendar"></div>
 
-<div class="card hidden" id="noteCard">
-  <div id="noteDate"></div>
-  <div id="noteDisplay"></div>
-  <textarea id="noteEdit" class="hidden"></textarea>
+<!-- 寄语卡片 -->
+<section id="card" class="card">
+  <strong id="cDate"></strong>
+  <div id="cBody" class="body"></div>
+</section>
 
-  <div class="btnRow">
-    <button id="gen" class="action">生成一句</button>
-    <button id="regen" class="action secondary">再来一句</button>
-    <button id="editSave" class="action">编辑</button>
-    <button id="delete" class="action secondary">删除</button>
-  </div>
-</div>
-
-<div class="btnRow" style="margin-top:14px;">
-  <label class="action secondary" style="flex:1;text-align:center;cursor:pointer;">
-    载入备份
-    <input type="file" id="importFile" accept=".json">
-  </label>
-  <button id="export" class="action secondary" style="flex:1;">导出备份</button>
-</div>
-
-<footer>数据仅存于本地浏览器 · 离线可用</footer>
+<!-- 引入固定寄语 -->
+<script src="dateMessages.js"></script>
 
 <script>
-/* ---------- 变量与初始化 ---------- */
-const calEl=document.getElementById('calendar');
-const titleMonthYear=document.getElementById('monthYear');
-const noteCard=document.getElementById('noteCard');
-const noteDateEl=document.getElementById('noteDate');
-const noteDisplay=document.getElementById('noteDisplay');
-const noteEdit=document.getElementById('noteEdit');
-const genBtn=document.getElementById('gen');
-const regenBtn=document.getElementById('regen');
-const editSaveBtn=document.getElementById('editSave');
-const delBtn=document.getElementById('delete');
-const importFile=document.getElementById('importFile');
-const exportBtn=document.getElementById('export');
+/* ============ 简明逻辑 ============ */
+const $=s=>document.querySelector(s);
+const cal=$('#cal'),ym=$('#ym'),card=$('#card'),cDate=$('#cDate'),cBody=$('#cBody');
+const msgs=window.dateMessages||{};
+let cur=new Date(),sel=null;
 
-let current=new Date();
-let selectedDate=null;
-const STORAGE_KEY='timeCapsuleData';
-let data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
-
-const randomSentences=[
-  "愿今后的你，眼里有光，心里有海。",
-  "花会沿路盛开，你以后的路也是。",
-  "别灰心，宇宙都在偷偷爱你。",
-  "今日份温柔递给自己。",
-  "请成为永远浪漫的人。",
-  "星光不问赶路人，时光不负有心人。",
-  "慢一点，再慢一点，和生活击个掌。",
-  "种自己的花，爱自己的宇宙。",
-  "把喜欢写在风里，等风也喜欢你。",
-  "温柔要有，但不是妥协。"
-];
-
-/* ---------- 工具 ---------- */
+/* 格式化日期 */
 const fmt=d=>d.toISOString().split('T')[0];
-const saveData=()=>localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
 
-/* ---------- 渲染日历 ---------- */
-function renderCalendar(){
-  calEl.innerHTML='';
-  const y=current.getFullYear(),m=current.getMonth();
-  titleMonthYear.textContent=`${y} 年 ${m+1} 月`;
-
-  const weekdays=['日','一','二','三','四','五','六'];
-  weekdays.forEach(w=>{
-    const el=document.createElement('div');
-    el.className='weekday';
-    el.textContent=w;
-    calEl.appendChild(el);
-  });
-
-  const first=new Date(y,m,1),start=first.getDay(),days=new Date(y,m+1,0).getDate();
-  for(let i=0;i<start;i++){
-    const blank=document.createElement('div');
-    blank.className='day disabled';
-    calEl.appendChild(blank);
-  }
+/* 渲染月历 */
+function draw(){
+  cal.innerHTML='';
+  const y=cur.getFullYear(),m=cur.getMonth();ym.textContent=`${y} 年 ${m+1} 月`;
+  '日一二三四五六'.split('').forEach(w=>cal.append(cell('weekday',w)));
+  const first=new Date(y,m,1),off=first.getDay(),days=new Date(y,m+1,0).getDate();
+  for(let i=0;i<off;i++)cal.append(cell('day disabled',''));
   for(let d=1;d<=days;d++){
-    const cell=document.createElement('div');
-    cell.className='day';
-    cell.textContent=d;
     const date=new Date(y,m,d),key=fmt(date);
-    if(data[key])cell.classList.add('hasNote');
-    if(selectedDate&&key===fmt(selectedDate))cell.classList.add('selected');
-    cell.onclick=()=>openNote(date);
-    calEl.appendChild(cell);
+    const el=cell('day',d);
+    key in msgs && el.classList.add('has');
+    sel&&key===fmt(sel)&&el.classList.add('sel');
+    el.onclick=()=>open(date,key);
+    cal.append(el);
   }
 }
-
-/* ---------- 打开 & 编辑寄语 ---------- */
-function openNote(date){
-  selectedDate=date;
-  renderCalendar();
-  const key=fmt(date);
-  noteDateEl.textContent=`${date.getFullYear()} 年 ${date.getMonth()+1} 月 ${date.getDate()} 日`;
-  if(data[key]){
-    noteDisplay.textContent=data[key];
-    noteDisplay.classList.remove('hidden');
-    editSaveBtn.textContent='编辑';
-  }else{
-    noteDisplay.textContent='（暂无寄语）';
-    editSaveBtn.textContent='写一条';
-  }
-  noteEdit.classList.add('hidden');
-  noteCard.classList.remove('hidden');
+/* 创建格子 */
+function cell(cls,txt){
+  const div=document.createElement('div');div.className=cls;div.textContent=txt;return div;
+}
+/* 打开寄语 */
+function open(date,key){
+  sel=date;draw();
+  cDate.textContent=key;
+  if(key in msgs){
+    const m=msgs[key],sign=m.sign?`\n${m.sign}`:'';
+    cBody.textContent=m.body+sign;
+  }else cBody.textContent='今天还没有寄语，留一点期待吧～';
+  card.classList.add('show');
 }
 
-/* ---------- 事件 ---------- */
-genBtn.onclick=()=>generateSentence();
-regenBtn.onclick=()=>generateSentence();
-function generateSentence(){
-  if(!selectedDate)return;
-  noteDisplay.textContent=randomSentences[Math.floor(Math.random()*randomSentences.length)];
-  noteDisplay.classList.remove('hidden');
-  noteEdit.classList.add('hidden');
-  editSaveBtn.textContent='保存';
-}
-
-editSaveBtn.onclick=()=>{
-  if(!selectedDate)return;
-  const key=fmt(selectedDate);
-  if(editSaveBtn.textContent==='编辑'||editSaveBtn.textContent==='写一条'){
-    noteEdit.value=data[key]||'';
-    noteEdit.classList.remove('hidden');
-    noteDisplay.classList.add('hidden');
-    editSaveBtn.textContent='保存';
-  }else{
-    const txt=noteEdit.value.trim();
-    if(txt){data[key]=txt;}else{delete data[key];}
-    saveData();renderCalendar();openNote(selectedDate);
-  }
-};
-
-delBtn.onclick=()=>{
-  if(!selectedDate)return;
-  const key=fmt(selectedDate);
-  if(data[key]&&confirm('确定删除这条寄语吗？')){
-    delete data[key];saveData();renderCalendar();openNote(selectedDate);
-  }
-};
-
-/* ---------- 导航 ---------- */
-document.getElementById('prevMonth').onclick=()=>{current.setMonth(current.getMonth()-1);renderCalendar();};
-document.getElementById('nextMonth').onclick=()=>{current.setMonth(current.getMonth()+1);renderCalendar();};
-document.getElementById('prevYear').onclick=()=>{current.setFullYear(current.getFullYear()-1);renderCalendar();};
-document.getElementById('nextYear').onclick=()=>{current.setFullYear(current.getFullYear()+1);renderCalendar();};
-
-/* ---------- 备份导入导出 ---------- */
-importFile.onchange=e=>{
-  const file=e.target.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    try{
-      const obj=JSON.parse(ev.target.result);
-      if(typeof obj==='object'){Object.assign(data,obj);saveData();alert('导入成功！');renderCalendar();}
-      else throw Error();
-    }catch{alert('导入失败：文件格式错误');}
-  };reader.readAsText(file);importFile.value='';
-};
-exportBtn.onclick=()=>{
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='time_capsule_backup.json';
-  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
-};
-
-/* ---------- 首次渲染 ---------- */
-renderCalendar();
+/* 导航点击 */
+$('#prevM').onclick=()=>{cur.setMonth(cur.getMonth()-1);draw();};
+$('#nextM').onclick=()=>{cur.setMonth(cur.getMonth()+1);draw();};
+draw();
 </script>
+
+<footer>完全离线可用 · 数据由 dateMessages.js 提供</footer>
 </body>
 </html>
