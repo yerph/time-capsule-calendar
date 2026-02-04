@@ -40,7 +40,9 @@ body{
   flex-direction:column;
   gap:12px;
   position:relative;
-  overflow:hidden;
+  overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 
 /* 背景浮动光斑 */
@@ -76,7 +78,6 @@ body{
   top:40%;left:-80px;
   animation-duration:26s;
 }
-
 @keyframes floatOrb{
   0%{ transform:translate3d(0,0,0); }
   50%{ transform:translate3d(20px,-10px,0); }
